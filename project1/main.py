@@ -1,7 +1,7 @@
 from __future__ import division
 
 from abc import ABCMeta, abstractmethod, abstractproperty
-from random import randint, random
+from random import randint, random, shuffle
 from math import sqrt
 
 import pylab as p
@@ -252,10 +252,30 @@ class SigmaScaling(ParentSelection):
             self.h[i] += self.h[i-1]
         self.h = zip(self.h, adults)
 
+class TournamentSelection(ParentSelection):
+    K = 20
+    e = 0.05
+    def __init__(self, adults):
+        self.adults = adults
+    
+    def nextp(self):
+        tournament = list(self.adults) 
+        shuffle(tournament)
+        tournament = tournament[:self.K]
+        cr = random()
+        if cr < self.e:
+            return tournament[0]
+        else:
+            return max(tournament, key=lambda x: x.fitness)
+    
+    def next(self):
+        return self.nextp(), self.nextp()
+
+
 if __name__ == '__main__':
     population = 30
     asa = A_III(population, 40)
 
-    ea = EA(40, 0.9, 0.1, BitVectorGenotype, length=40, 
-            adult_selection=asa, parent_selection=SigmaScaling, phenotype=OneMaxPhenotype)
+    ea = EA(40, 0.9, 0.03, BitVectorGenotype, length=40, 
+            adult_selection=asa, parent_selection=TournamentSelection, phenotype=OneMaxPhenotype)
     ea.loop(100)
