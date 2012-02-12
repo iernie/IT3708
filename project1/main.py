@@ -8,7 +8,6 @@ import pylab as p
 def average(values):
     return sum(values, 0.0) / len(values)
 
-
 class EA(object):
 
     def __init__(self, population, crossover,
@@ -24,6 +23,17 @@ class EA(object):
         self.population = population
 
     def loop(self, generations):
+        def reproduce(p1,p2):
+            cr = random()
+            cg = None
+            if cr < self.crossover:
+                cg = p1.genotype.crossover(p2.genotype) 
+            else:
+                cg = p1.genotype
+            cr = random()
+            if cr < self.mutation:
+                cg.mutate()
+            return cg
         maxs = []
         avgs = []
 
@@ -37,25 +47,13 @@ class EA(object):
             retain = self.adult_selection.retain(adults)
 
             children = []
-            i = self.population - len(retain)
+            i = self.adult_selection.produce()
             for p1,p2 in self.parent_selection(adults):
                 ## reproduction
-                cr = random()
-                cg = None
-                if cr < self.crossover:
-                    cg = p1.genotype.crossover(p2.genotype)
-                else:
-                    cr = random()
-                    if cr < 0.5:
-                        cg = p1.genotype
-                    else:
-                        cg = p2.genotype
-                cr = random()
-                if cr < self.mutation:
-                    cg.mutate()
-
-                children.append(cg)
-
+                children.append(reproduce(p1,p2))
+                i -= 1
+                if i <= 0: break
+                children.append(reproduce(p2,p1))
                 i -= 1
                 if i <= 0: break
             
@@ -144,21 +142,42 @@ class AdultSelection(object):
     @abstractmethod
     def retain(self, pool): pass
 
+    @abstractmethod
+    def produce(self): pass
+
 
 class A_I(AdultSelection):
     # Full Generational Replacement
+    def __init__(self, population):
+        self.population = population
+
     def select(self, pool):
         return pool
+
     def retain(self, pool):
         return []
+
+    def produce(self):
+        return self.population
 
 
 class A_II(AdultSelection):
     # Over-production
-    pass
+    def __init__(self, no_adults, no_children):
+        self.no_adults = no_adults
+        self.no_children = no_children
+
+    def select(self, pool):
+        return sorted(pool, key=lambda x: x.fitness, reverse=True)[:self.no_adults]
+
+    def retain(self, pool):
+        return []
+
+    def produce(self):
+        return self.no_children
 
 class A_III(AdultSelection):
-    # Generational Mixing
+    # Generational Mi5xing
     pass
 
 
@@ -197,8 +216,9 @@ class NormalizedRoulette(ParentSelection):
         
 
 if __name__ == '__main__':
-    asa = A_I()
+    population = 30
+    asa = A_II(population, 40)
 
-    ea = EA(20, 0.9, 0.05, BitVectorGenotype, length=20, 
+    ea = EA(40, 0.9, 0.05, BitVectorGenotype, length=40, 
             adult_selection=asa, parent_selection=NormalizedRoulette, phenotype=OneMaxPhenotype)
     ea.loop(100)
