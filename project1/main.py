@@ -4,7 +4,7 @@ from abc import ABCMeta, abstractmethod, abstractproperty
 from random import randint, random, shuffle
 from math import sqrt
 
-#import pylab as p
+import pylab as p
 
 def average(values):
     return sum(values, 0.0) / len(values)
@@ -69,9 +69,9 @@ class EA(object):
             self.individuals = children + [x.genotype for x in retain]
             
 
-        #p.plot(maxs)
-        #p.plot(avgs)
-        #p.show()
+        p.plot(maxs)
+        p.plot(avgs)
+        p.show()
     
 
 
