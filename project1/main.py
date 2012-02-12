@@ -177,8 +177,19 @@ class A_II(AdultSelection):
         return self.no_children
 
 class A_III(AdultSelection):
-    # Generational Mi5xing
-    pass
+    # Generational Mixing
+    def __init__(self, no_adults, no_children):
+        self.no_adults = no_adults
+        self.no_children = no_children
+    
+    def select(self, pool):
+        return sorted(pool, key=lambda x: x.fitness, reverse=True)[:self.no_adults]
+    
+    def retain(self, pool):
+        return pool
+    
+    def produce(self):
+        return self.no_children
 
 
 class ParentSelection(object):
@@ -217,7 +228,7 @@ class NormalizedRoulette(ParentSelection):
 
 if __name__ == '__main__':
     population = 30
-    asa = A_II(population, 40)
+    asa = A_III(population, 40)
 
     ea = EA(40, 0.9, 0.05, BitVectorGenotype, length=40, 
             adult_selection=asa, parent_selection=NormalizedRoulette, phenotype=OneMaxPhenotype)
