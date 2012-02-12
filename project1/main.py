@@ -2,11 +2,20 @@ from __future__ import division
 
 from abc import ABCMeta, abstractmethod, abstractproperty
 from random import randint, random
+from math import sqrt
 
 import pylab as p
 
 def average(values):
     return sum(values, 0.0) / len(values)
+
+def standard_deviation(values):
+    avg = average(values)
+    tmp = 0
+    for f in values:
+        tmp += (f-avg)**2
+    tmp /= len(values)
+    return sqrt(tmp)
 
 class EA(object):
 
@@ -184,17 +193,6 @@ class A_III(AdultSelection):
 class ParentSelection(object):
     __metaclass__ = ABCMeta
 
-class NormalizedRoulette(ParentSelection):
-
-    def __init__(self, adults):
-        ft = [x.fitness for x in adults]
-        s = sum(ft, 0.0)
-        ft[0] /= s
-        for i in range(1,len(ft)):
-            ft[i] /= s
-            ft[i] += ft[i-1]
-        self.h = zip(ft,adults)
-
     def __iter__(self):
         return self
 
@@ -213,12 +211,40 @@ class NormalizedRoulette(ParentSelection):
                 break
         return p1,p2
 
-        
+class NormalizedRoulette(ParentSelection):
+
+    def __init__(self, adults):
+        ft = [x.fitness for x in adults]
+        s = sum(ft, 0.0)
+        ft[0] /= s
+        for i in range(1,len(ft)):
+            ft[i] /= s
+            ft[i] += ft[i-1]
+        self.h = zip(ft,adults)
+
+class SigmaScaling(ParentSelection):
+
+    def __init__(self, adults):
+        ft = [x.fitness for x in adults]
+        sd = 2*standard_deviation(ft)
+        if sd == 0:
+            self.h = [1]*len(adults)
+        else:
+            avg = average(ft)
+            self.h = []
+            for a in adults:
+                self.h.append((1+(a.fitness-avg)/sd))
+        s = sum(self.h,0.0)
+        self.h[0] /= s
+        for i in range(1, len(self.h)):
+            self.h[i] /= s
+            self.h[i] += self.h[i-1]
+        self.h = zip(self.h, adults)
 
 if __name__ == '__main__':
     population = 30
     asa = A_II(population, 40)
 
-    ea = EA(40, 0.9, 0.05, BitVectorGenotype, length=40, 
-            adult_selection=asa, parent_selection=NormalizedRoulette, phenotype=OneMaxPhenotype)
+    ea = EA(40, 0.9, 0.1, BitVectorGenotype, length=40, 
+            adult_selection=asa, parent_selection=SigmaScaling, phenotype=OneMaxPhenotype)
     ea.loop(100)
