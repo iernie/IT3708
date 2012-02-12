@@ -4,7 +4,7 @@ from abc import ABCMeta, abstractmethod, abstractproperty
 from random import randint, random, shuffle
 from math import sqrt
 
-import pylab as p
+#import pylab as p
 
 def average(values):
     return sum(values, 0.0) / len(values)
@@ -69,9 +69,9 @@ class EA(object):
             self.individuals = children + [x.genotype for x in retain]
             
 
-        p.plot(maxs)
-        p.plot(avgs)
-        p.show()
+        #p.plot(maxs)
+        #p.plot(avgs)
+        #p.show()
     
 
 
@@ -271,11 +271,24 @@ class TournamentSelection(ParentSelection):
     def next(self):
         return self.nextp(), self.nextp()
 
+class RankSelection(ParentSelection):
+    max_ft = 1.5
+    min_ft = 0.5
+    def __init__(self, adults):
+        self.adults = adults
+        self.h = []
+        for a in adults:
+            self.h.append((self.min_ft+(self.max_ft-self.min_ft)*(self.rank(a)-1/len(adults)-1)))
+        self.h = zip(self.h, adults)
+
+    def rank(self, individual):
+        adults_sorted = sorted(self.adults, key=lambda x: x.fitness)
+        return adults_sorted.index(individual)
 
 if __name__ == '__main__':
     population = 30
     asa = A_III(population, 40)
 
     ea = EA(40, 0.9, 0.03, BitVectorGenotype, length=40, 
-            adult_selection=asa, parent_selection=TournamentSelection, phenotype=OneMaxPhenotype)
+            adult_selection=asa, parent_selection=RankSelection, phenotype=OneMaxPhenotype)
     ea.loop(100)
