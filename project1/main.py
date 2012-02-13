@@ -4,8 +4,10 @@ from abc import ABCMeta, abstractmethod, abstractproperty
 from random import randint, random, shuffle
 from math import sqrt
 import getopt
+import sys
 
-import pylab as p
+#import pylab as p
+import matplotlib.pyplot as plt
 
 def average(values):
     return sum(values, 0.0) / len(values)
@@ -70,9 +72,14 @@ class EA(object):
             self.individuals = children + [x.genotype for x in retain]
             
 
-        p.plot(maxs)
-        p.plot(avgs)
-        p.show()
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+        ax.plot(maxs)
+        ax.plot(avgs)
+        fig.savefig("figure.eps")
+        #p.plot(maxs)
+        #p.plot(avgs)
+        #p.save("figure.png")
     
 
 
@@ -296,7 +303,7 @@ if __name__ == '__main__':
     generations = 100
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "pg", ['population', 'generations'])
+        opts, args = getopt.getopt(sys.argv[1:], "pg", ['population=', 'generations='])
     except getopt.GetoptError:
         print "Available options: --population, --generations"
         sys.exit()
@@ -304,11 +311,11 @@ if __name__ == '__main__':
     for o, a in opts:
         #Set population size
         if o in ('--population'):
-            population = a
+            population = int(a)
 
         #Set number of generations
         if o in ('--generations'):
-            generations = a
+            generations = int(a)
 
     asa = A_III(population, 40)
 
