@@ -3,6 +3,7 @@ from __future__ import division
 from abc import ABCMeta, abstractmethod, abstractproperty
 from random import randint, random, shuffle
 from math import sqrt
+import getopt
 
 import pylab as p
 
@@ -286,9 +287,27 @@ class RankSelection(ParentSelection):
         return adults_sorted.index(individual)
 
 if __name__ == '__main__':
+    #Default values
     population = 30
+    generations = 100
+
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "pg", ['population', 'generations'])
+    except getopt.GetoptError:
+        print "Available options: --population, --generations"
+        sys.exit()
+    
+    for o, a in opts:
+        #Set population size
+        if o in ('--population'):
+            population = a
+
+        #Set number of generations
+        if o in ('--generations'):
+            generations = a
+
     asa = A_III(population, 40)
 
     ea = EA(40, 0.9, 0.03, BitVectorGenotype, length=40, 
             adult_selection=asa, parent_selection=RankSelection, phenotype=OneMaxPhenotype)
-    ea.loop(100)
+    ea.loop(generations)
