@@ -341,7 +341,7 @@ if __name__ == '__main__':
                     'e=',
                     'phenotype='])
     except getopt.GetoptError:
-        print "Available options: --population, --generations, --bvl, --fitchildren, --adultselect, --parentselect, --k, --e, --min, --max"
+        print "Available options: --population, --generations, --bvl, --fitchildren, --adultselect, --parentselect, --k, --e, --min, --max, --phenotype"
         sys.exit()
     
     for o, a in opts:
