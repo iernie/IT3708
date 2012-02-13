@@ -252,43 +252,47 @@ class SigmaScaling(ParentSelection):
             self.h[i] += self.h[i-1]
         self.h = zip(self.h, adults)
 
-class TournamentSelection(ParentSelection):
-    K = 20
-    e = 0.05
-    def __init__(self, adults):
-        self.adults = adults
-    
-    def nextp(self):
-        tournament = list(self.adults) 
-        shuffle(tournament)
-        tournament = tournament[:self.K]
-        cr = random()
-        if cr < self.e:
-            return tournament[0]
-        else:
-            return max(tournament, key=lambda x: x.fitness)
-    
-    def next(self):
-        return self.nextp(), self.nextp()
+def TournamentSelectionFactory(k, eps):
+    class TournamentSelection(ParentSelection):
+        K = k
+        e = eps
+        def __init__(self, adults):
+            self.adults = adults
+        
+        def nextp(self):
+            tournament = list(self.adults) 
+            shuffle(tournament)
+            tournament = tournament[:self.K]
+            cr = random()
+            if cr < self.e:
+                return tournament[0]
+            else:
+                return max(tournament, key=lambda x: x.fitness)
+        
+        def next(self):
+            return self.nextp(), self.nextp()
+    return TournamentSelection
 
-class RankSelection(ParentSelection):
-    max_ft = 1.5
-    min_ft = 0.5
-    def __init__(self, adults):
-        self.adults = adults
-        self.h = []
-        for a in adults:
-            self.h.append((self.min_ft+(self.max_ft-self.min_ft)*(self.rank(a)-1/len(adults)-1)))
-        self.h = zip(self.h, adults)
+def RankSelectionFactory(max_fta, min_fta):
+    class RankSelection(ParentSelection):
+        max_ft = max_fta
+        min_ft = min_fta
+        def __init__(self, adults):
+            self.adults = adults
+            self.h = []
+            for a in adults:
+                self.h.append((self.min_ft+(self.max_ft-self.min_ft)*(self.rank(a)-1/len(adults)-1)))
+            self.h = zip(self.h, adults)
 
-    def rank(self, individual):
-        adults_sorted = sorted(self.adults, key=lambda x: x.fitness)
-        return adults_sorted.index(individual)
+        def rank(self, individual):
+            adults_sorted = sorted(self.adults, key=lambda x: x.fitness)
+            return adults_sorted.index(individual) + 1
+    return RankSelection
 
 if __name__ == '__main__':
     population = 30
     asa = A_III(population, 40)
 
-    ea = EA(40, 0.9, 0.03, BitVectorGenotype, length=40, 
-            adult_selection=asa, parent_selection=RankSelection, phenotype=OneMaxPhenotype)
+    ea = EA(40, 0.9, 0.1, BitVectorGenotype, length=40, 
+            adult_selection=asa, parent_selection=RankSelectionFactory(1.5,0.5), phenotype=OneMaxPhenotype)
     ea.loop(100)
