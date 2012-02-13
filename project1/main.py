@@ -18,6 +18,24 @@ def standard_deviation(values):
     tmp /= len(values)
     return sqrt(tmp)
 
+def get_adult_selection(adultselect, population, fitchildren):
+    if adultselect == "A_I":
+        return A_I(population)
+    elif adultselect == "A_II":
+        return A_II(population, fitchildren)
+    elif adultselect == "A_III":
+        return A_III(population, fitchildren)
+
+def get_parent_selection(parentselect, k, eps, max_ft, min_ft):
+    if parentselect == "normalized":
+        return NormalizedRoulette
+    elif parentselect == "sigma":
+        return SigmaScaling
+    elif parentselect == "tournament":
+        return TournamentSelectionFactory(k, eps)
+    elif parentselect == "rank":
+        return RankSelectionFactory(max_ft, min_ft)
+
 class EA(object):
 
     def __init__(self, population, crossover,
@@ -255,17 +273,15 @@ class SigmaScaling(ParentSelection):
 
 def TournamentSelectionFactory(k, eps):
     class TournamentSelection(ParentSelection):
-        K = k
-        e = eps
         def __init__(self, adults):
             self.adults = adults
         
         def nextp(self):
             tournament = list(self.adults) 
             shuffle(tournament)
-            tournament = tournament[:self.K]
+            tournament = tournament[:k]
             cr = random()
-            if cr < self.e:
+            if cr < eps:
                 return tournament[0]
             else:
                 return max(tournament, key=lambda x: x.fitness)
@@ -274,15 +290,13 @@ def TournamentSelectionFactory(k, eps):
             return self.nextp(), self.nextp()
     return TournamentSelection
 
-def RankSelectionFactory(max_fta, min_fta):
+def RankSelectionFactory(max_ft, min_ft):
     class RankSelection(ParentSelection):
-        max_ft = max_fta
-        min_ft = min_fta
         def __init__(self, adults):
             self.adults = adults
             self.h = []
             for a in adults:
-                self.h.append((self.min_ft+(self.max_ft-self.min_ft)*(self.rank(a)-1/len(adults)-1)))
+                self.h.append((min_ft+(max_ft-min_ft)*(self.rank(a)-1/len(adults)-1)))
             self.h = zip(self.h, adults)
 
         def rank(self, individual):
@@ -294,24 +308,62 @@ if __name__ == '__main__':
     #Default values
     population = 30
     generations = 100
+    bvl = 40
+    fitchildren = 40
+    adultselect = "A_III"
+    parentselect = "rank"
+    k = 20
+    eps = 0.05
+    max_ft = 1.5
+    min_ft = 0.5
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "pg", ['population', 'generations'])
+        opts, args = getopt.getopt(sys.argv[1:], "", ['population=', 'generations=', 'bvl=', 'fitchildren=', 'adultselect=', 
+        'parentselect=', 'min=', 'max=', 'k=', 'e='])
     except getopt.GetoptError:
-        print "Available options: --population, --generations"
+        print "Available options: --population, --generations, --bvl, --fitchildren, --adultselect, --parentselect, --k, --e, --min, --max"
         sys.exit()
     
     for o, a in opts:
         #Set population size
         if o in ('--population'):
-            population = a
+            population = int(a)
 
         #Set number of generations
         if o in ('--generations'):
-            generations = a
+            generations = int(a)
 
-    asa = A_III(population, 40)
+        #Set bit vector length
+        if o in ('--bvl'):
+            generations = int(a)
 
-    ea = EA(40, 0.9, 0.1, BitVectorGenotype, length=40, 
-            adult_selection=asa, parent_selection=RankSelectionFactory(1.5,0.5), phenotype=OneMaxPhenotype)
+        #Set number of children that are allowed to grow up
+        if o in ('--fitchildren'):
+            fitchildren = int(a)
+
+        #Set the adult selection mechanism
+        if o in ('--adultselect'):
+            adultselect = str(a)
+
+        #Set the parent selection mechanism
+        if o in ('--parentselect'):
+            parentselect = str(a)
+
+        if o in ('--k'):
+            k = int(a)
+
+        if o in ('--e'):
+            eps = int(a)
+
+        if o in ('--min'):
+            min_ft = int(a)
+
+        if o in ('--max'):
+            max_ft = int(a)
+
+    ea = EA(fitchildren, 0.9, 0.1, BitVectorGenotype,
+            length=bvl, 
+            adult_selection=get_adult_selection(adultselect, population, fitchildren),
+            parent_selection=get_parent_selection(ParentSelection, k, eps, max_ft, min_ft),
+            phenotype=OneMaxPhenotype)
     ea.loop(generations)
