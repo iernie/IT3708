@@ -8,6 +8,7 @@ import sys
 
 #import pylab as p
 import matplotlib.pyplot as plt
+import part1b
 
 def average(values):
     return sum(values, 0.0) / len(values)
@@ -156,6 +157,7 @@ class Phenotype(object):
 
     @abstractproperty
     def fitness(self): pass
+
 
 class OneMaxPhenotype(Phenotype):
 
@@ -319,13 +321,25 @@ if __name__ == '__main__':
     fitchildren = 40
     adultselect = "A_III"
     parentselect = "rank"
+    phenotype = OneMaxPhenotype
     k = 20
     eps = 0.05
     max_ft = 1.5
     min_ft = 0.5
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "", ['population=', 'generations=', 'bvl=', 'fitchildren=', 'adultselect=', 'parentselect=', 'min=', 'max=', 'k=', 'e='])
+        opts, args = getopt.getopt(sys.argv[1:], "",
+                ['population=',
+                    'generations=',
+                    'bvl=',
+                    'fitchildren=',
+                    'adultselect=',
+                    'parentselect=',
+                    'min=',
+                    'max=', 
+                    'k=', 
+                    'e=',
+                    'phenotype='])
     except getopt.GetoptError:
         print "Available options: --population, --generations, --bvl, --fitchildren, --adultselect, --parentselect, --k, --e, --min, --max"
         sys.exit()
@@ -367,9 +381,16 @@ if __name__ == '__main__':
         if o in ('--max'):
             max_ft = int(a)
 
+        if o in ('--phenotype'):
+            try:
+                phenotype = eval(a)
+            except:
+                print "You don't exist. Go away!"
+                sys.exit(-1)
+
     ea = EA(fitchildren, 0.9, 0.1, BitVectorGenotype,
             length=bvl, 
             adult_selection=get_adult_selection(adultselect, population, fitchildren),
             parent_selection=get_parent_selection(parentselect, k, eps, max_ft, min_ft),
-            phenotype=OneMaxPhenotype)
+            phenotype=phenotype)
     ea.loop(generations)
