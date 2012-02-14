@@ -52,6 +52,7 @@ class EA(object):
         self.adult_selection = adult_selection
         self.parent_selection = parent_selection
         self.population = population
+        self.pts = []
 
     def loop(self, generations):
         def reproduce(p1,p2):
@@ -69,12 +70,12 @@ class EA(object):
         avgs = []
 
         for i in xrange(generations):
-            pts = [x.develop(i) for x in self.individuals]
-            fitness = [x.fitness for x in pts]
+            self.pts = [x.develop(self) for x in self.individuals]
+            fitness = [x.fitness for x in self.pts]
             maxs.append(max(fitness))
             avgs.append(average(fitness))
 
-            adults = self.adult_selection.select(pts)
+            adults = self.adult_selection.select(self.pts)
             retain = self.adult_selection.retain(adults)
 
             children = []
@@ -151,6 +152,9 @@ class BitVectorGenotype(Genotype):
 
     def develop(self, i):
         return self.phenotype(self, i)
+
+    def __repr__(self):
+        return "<BitVectorGenotype()>"
 
 class Phenotype(object):
     __metaclass__ = ABCMeta
@@ -373,13 +377,13 @@ if __name__ == '__main__':
             k = int(a)
 
         if o in ('--e'):
-            eps = int(a)
+            eps = float(a)
 
         if o in ('--min'):
-            min_ft = int(a)
+            min_ft = float(a)
 
         if o in ('--max'):
-            max_ft = int(a)
+            max_ft = float(a)
 
         if o in ('--phenotype'):
             try:
