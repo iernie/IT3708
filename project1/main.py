@@ -83,7 +83,7 @@ class EA(object):
             fitness = [x.fitness for x in self.pts]
             maxs.append(max(fitness))
             sds.append(standard_deviation(fitness))
-            print "Winner",i,max(self.pts, key=lambda x: x.fitness), maxs[-1]
+            print "Winner",i,max(self.pts, key=lambda x: x.fitness), maxs[-1], len(self.pts)
             avgs.append(average(fitness))
             if doentropy:
                 strategy_entropies.append(average([x.strategy_entropy for x in self.pts]))
@@ -119,6 +119,8 @@ class EA(object):
             ax = fig2.add_subplot(111)
             ax.plot(strategy_entropies)
             fig2.savefig(self.figure+'_entropies'+ext)
+
+        print max(maxs), maxs.index(max(maxs))
         #p.plot(maxs)
         #p.plot(avgs)
         #p.save("figure.png")

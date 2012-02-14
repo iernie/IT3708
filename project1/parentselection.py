@@ -40,11 +40,11 @@ class SigmaScaling(ParentSelection):
 
     def __init__(self, adults):
         ft = [x.fitness for x in adults]
-        sd = 2*standard_deviation(ft)
+        sd = 2*main.standard_deviation(ft)
         if sd == 0:
             self.h = [1]*len(adults)
         else:
-            avg = average(ft)
+            avg = main.average(ft)
             self.h = []
             for a in adults:
                 self.h.append((1+(a.fitness-avg)/sd))

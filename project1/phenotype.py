@@ -63,6 +63,31 @@ class OneMaxPhenotype(Phenotype):
         s += ")"
         return s
 
+class NeedlePhenotype(Phenotype):
+    #sol = [1,0,0,0,0,1,1,1,1,1,1,1,1,1,1,0,0,1,1,0,0,1,1,1,0,0,1,1,1,1,0,1,0,1,0,0,1,1,1,0] 
+    sol = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] 
+
+    def __init__(self, genotype, generation):
+        assert isinstance(genotype, geno.BitVectorGenotype)
+        assert len(genotype.vector) == len(self.sol)
+        self.genotype = genotype
+        self.generation = generation
+
+    @property
+    def fitness(self):
+        f = 0
+        for a,b in zip(self.sol,self.genotype.vector):
+            if a==b:
+                f += 1
+        return f
+
+    def __repr__(self):
+        s = "<NeedlePhenotype("
+        s += "".join(str(x) for x in self.genotype.vector)
+        s += ")"
+        return s
+
+
 class BlottoPhenotype(Phenotype):
 
     def __init__(self, genotype, ea):
