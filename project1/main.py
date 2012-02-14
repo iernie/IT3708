@@ -131,8 +131,8 @@ if __name__ == '__main__':
     generations = 100
     bvl = 40
     fitchildren = 40
-    adultselect = "A_III"
-    parentselect = "rank"
+    adultselect = "A_I"
+    parentselect = "P_I"
     phenotype = pheno.OneMaxPhenotype
     k = 20
     eps = 0.05
