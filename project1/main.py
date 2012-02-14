@@ -401,10 +401,10 @@ if __name__ == '__main__':
                 sys.exit(-1)
 
         for o in ('--crossover'):
-            crossover = int(a)
+            crossover = float(a)
 
         for o in ('--mutation'):
-            mutation = int(a)
+            mutation = float(a)
 
     ea = EA(fitchildren, crossover, mutation, BitVectorGenotype,
             length=bvl, 
