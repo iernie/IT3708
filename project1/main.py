@@ -360,6 +360,8 @@ if __name__ == '__main__':
     crossover = 0.9
     mutation = 0.1
     figure = "figure"
+    Rf = 0.5
+    Lf = 0.5
 
     try:
         opts, args = getopt.getopt(sys.argv[1:], "",
@@ -376,7 +378,10 @@ if __name__ == '__main__':
                     'phenotype=',
                     'crossover=',
                     'mutation=',
-                    'figure='])
+                    'figure=',
+                    'rf=',
+                    'lf='
+                    ])
     except getopt.GetoptError:
         print "Available options: --population, --generations, --bvl, --fitchildren, --adultselect, --parentselect, --k, --e, --min, --max, --phenotype, --crossover, --mutation, --figure"
         sys.exit()
@@ -434,9 +439,17 @@ if __name__ == '__main__':
         if o in ('--figure'):
             figure = str(a)
 
+        if o in ('--rf'):
+            Rf = float(a)
+
+        if o in ('--lf'):
+            Lf = float(a)
+
     ea = EA(fitchildren, crossover, mutation, BitVectorGenotype,
             figure=figure,
-            length=bvl, 
+            length=bvl,
+            Rf=Rf,
+            Lf=Lf,
             adult_selection=get_adult_selection(adultselect, population, fitchildren),
             parent_selection=get_parent_selection(parentselect, k, eps, max_ft, min_ft),
             phenotype=phenotype)
