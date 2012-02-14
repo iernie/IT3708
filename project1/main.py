@@ -360,7 +360,7 @@ if __name__ == '__main__':
 
         #Set bit vector length
         if o in ('--bvl'):
-            generations = int(a)
+            bvl = int(a)
 
         #Set number of children that are allowed to grow up
         if o in ('--fitchildren'):
