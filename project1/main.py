@@ -137,7 +137,7 @@ class Genotype(object):
 
 class BitVectorGenotype(Genotype):
 
-    def __init__(self, vector, length, phenotype):
+    def __init__(self, vector, length, phenotype, **kwargs):
         if vector == None:
             self.vector = []
             for i in range(length):
@@ -146,6 +146,7 @@ class BitVectorGenotype(Genotype):
             self.vector = vector
         self.length = length
         self.phenotype = phenotype
+        self.args = kwargs
 
     def crossover(self, other):
         assert isinstance(other, BitVectorGenotype)

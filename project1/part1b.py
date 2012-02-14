@@ -3,10 +3,8 @@ import main
 
 import math
 
-Rf = 0.5
-Lf = 0.5
 
-def simulate_war(this, others):
+def simulate_war(this, others, Rf, Lf):
     wins = 0
     length = len(this.strategy)
     for os in others:
@@ -59,7 +57,7 @@ class BlottoPhenotype(Phenotype):
         if self._fitness:
             return self._fitness
         else:
-            self._fitness = simulate_war(self, self.ea.pts)
+            self._fitness = simulate_war(self, self.ea.pts, self.genotype.args['Rf'], self.genotype.args['Lf'])
             return self._fitness
 
     @property
