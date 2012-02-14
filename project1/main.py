@@ -43,7 +43,7 @@ class EA(object):
 
     def __init__(self, population, crossover,
             mutation, genotype, adult_selection,
-            parent_selection, **kwargs):
+            parent_selection, figure, **kwargs):
         self.individuals = []
         for i in xrange(population):
             self.individuals.append(genotype(None, **kwargs))
@@ -54,6 +54,7 @@ class EA(object):
         self.population = population
         self.pts = []
         self.genotype = genotype
+        self.figure = figure
 
     def loop(self, generations):
         def reproduce(p1,p2):
@@ -110,13 +111,13 @@ class EA(object):
         ax.plot(maxs)
         ax.plot(sds)
         ax.plot(avgs)
-        fig.savefig("figure.eps")
+        fig.savefig(self.figure+".eps")
 
         if strategy_entropies:
             fig2 = plt.figure()
             ax = fig2.add_subplot(111)
             ax.plot(strategy_entropies)
-            fig2.savefig('entropies.eps')
+            fig2.savefig(self.figure+'_entropies.eps')
         #p.plot(maxs)
         #p.plot(avgs)
         #p.save("figure.png")
@@ -358,6 +359,7 @@ if __name__ == '__main__':
     min_ft = 0.5
     crossover = 0.9
     mutation = 0.1
+    figure = "figure"
 
     try:
         opts, args = getopt.getopt(sys.argv[1:], "",
@@ -373,9 +375,10 @@ if __name__ == '__main__':
                     'e=',
                     'phenotype=',
                     'crossover=',
-                    'mutation='])
+                    'mutation=',
+                    'figure='])
     except getopt.GetoptError:
-        print "Available options: --population, --generations, --bvl, --fitchildren, --adultselect, --parentselect, --k, --e, --min, --max, --phenotype, --crossover, --mutation"
+        print "Available options: --population, --generations, --bvl, --fitchildren, --adultselect, --parentselect, --k, --e, --min, --max, --phenotype, --crossover, --mutation, --figure"
         sys.exit()
     
     for o, a in opts:
@@ -428,7 +431,11 @@ if __name__ == '__main__':
         if o in ('--mutation'):
             mutation = float(a)
 
+        if o in ('--figure'):
+            figure = str(a)
+
     ea = EA(fitchildren, crossover, mutation, BitVectorGenotype,
+            figure=figure,
             length=bvl, 
             adult_selection=get_adult_selection(adultselect, population, fitchildren),
             parent_selection=get_parent_selection(parentselect, k, eps, max_ft, min_ft),
