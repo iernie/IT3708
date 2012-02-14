@@ -30,13 +30,13 @@ def get_adult_selection(adultselect, population, fitchildren):
         return adsel.A_III(population, fitchildren)
 
 def get_parent_selection(parentselect, k, eps, max_ft, min_ft):
-    if parentselect == "normalized":
+    if parentselect == "P_I":
         return parsel.NormalizedRoulette
-    elif parentselect == "sigma":
+    elif parentselect == "P_II":
         return parsel.SigmaScaling
-    elif parentselect == "tournament":
+    elif parentselect == "P_III":
         return parsel.TournamentSelectionFactory(k, eps)
-    elif parentselect == "rank":
+    elif parentselect == "P_IV":
         return parsel.RankSelectionFactory(max_ft, min_ft)
 
 class EA(object):
@@ -105,19 +105,20 @@ class EA(object):
             
             self.individuals = children + [x.genotype for x in retain]
             
+        ext = ".png"
 
         fig = plt.figure()
         ax = fig.add_subplot(111)
         ax.plot(maxs)
         ax.plot(sds)
         ax.plot(avgs)
-        fig.savefig(self.figure+".eps")
+        fig.savefig(self.figure+ext)
 
         if strategy_entropies:
             fig2 = plt.figure()
             ax = fig2.add_subplot(111)
             ax.plot(strategy_entropies)
-            fig2.savefig(self.figure+'_entropies.eps')
+            fig2.savefig(self.figure+'_entropies'+ext)
         #p.plot(maxs)
         #p.plot(avgs)
         #p.save("figure.png")
@@ -203,7 +204,7 @@ if __name__ == '__main__':
 
         if o in ('--phenotype'):
             try:
-                phenotype = eval(a)
+                phenotype = eval("pheno."+a)
             except:
                 print "You don't exist. Go away!"
                 sys.exit(-1)
