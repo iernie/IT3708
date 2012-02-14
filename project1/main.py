@@ -1,14 +1,14 @@
 from __future__ import division
-
-from abc import ABCMeta, abstractmethod, abstractproperty
-from random import randint, random, shuffle
 from math import sqrt
 import getopt
 import sys
+from random import randint, random, shuffle
 
-#import pylab as p
 import matplotlib.pyplot as plt
-import part1b
+import adultselection as adsel
+import genotype as geno
+import parentselection as parsel
+import phenotype as pheno
 
 def average(values):
     return sum(values, 0.0) / len(values)
@@ -23,21 +23,21 @@ def standard_deviation(values):
 
 def get_adult_selection(adultselect, population, fitchildren):
     if adultselect == "A_I":
-        return A_I(population)
+        return adsel.A_I(population)
     elif adultselect == "A_II":
-        return A_II(population, fitchildren)
+        return adsel.A_II(population, fitchildren)
     elif adultselect == "A_III":
-        return A_III(population, fitchildren)
+        return adsel.A_III(population, fitchildren)
 
 def get_parent_selection(parentselect, k, eps, max_ft, min_ft):
     if parentselect == "normalized":
-        return NormalizedRoulette
+        return parsel.NormalizedRoulette
     elif parentselect == "sigma":
-        return SigmaScaling
+        return parsel.SigmaScaling
     elif parentselect == "tournament":
-        return TournamentSelectionFactory(k, eps)
+        return parsel.TournamentSelectionFactory(k, eps)
     elif parentselect == "rank":
-        return RankSelectionFactory(max_ft, min_ft)
+        return parsel.RankSelectionFactory(max_ft, min_ft)
 
 class EA(object):
 
@@ -121,229 +121,6 @@ class EA(object):
         #p.plot(maxs)
         #p.plot(avgs)
         #p.save("figure.png")
-    
-
-
-class Genotype(object):
-    __metaclass__ = ABCMeta
-
-    @abstractmethod
-    def develop(self): pass
-
-    @abstractmethod
-    def crossover(self,other): pass
-
-    @abstractmethod
-    def mutate(self): pass
-
-class BitVectorGenotype(Genotype):
-
-    def __init__(self, vector, length, phenotype, **kwargs):
-        if vector == None:
-            self.vector = []
-            for i in range(length):
-                self.vector.append(randint(0,1))
-        else:
-            self.vector = vector
-        self.length = length
-        self.phenotype = phenotype
-        self.args = kwargs
-
-    def crossover(self, other):
-        assert isinstance(other, BitVectorGenotype)
-        assert len(self.vector) == len(other.vector)
-        i = randint(0,len(self.vector))
-        if randint(0,1) == 0:
-            return BitVectorGenotype(
-                    other.vector[:i] + self.vector[i:],
-                    self.length, 
-                    self.phenotype)
-        else:
-            return BitVectorGenotype(
-                    self.vector[:i] + other.vector[i:],
-                    self.length,
-                    self.phenotype)
-
-    def mutate(self):
-        i = randint(0,len(self.vector)-1)
-        h = self.vector
-        h[i] = (h[i] + 1)&1
-        return BitVectorGenotype(h,
-                self.length,
-                self.phenotype)
-
-    def develop(self, i):
-        return self.phenotype(self, i)
-
-    def __repr__(self):
-        return "<BitVectorGenotype()>"
-
-class Phenotype(object):
-    __metaclass__ = ABCMeta
-
-    @abstractproperty
-    def fitness(self): pass
-
-
-class OneMaxPhenotype(Phenotype):
-
-    def __init__(self, genotype, generation):
-        assert isinstance(genotype, BitVectorGenotype)
-        self.genotype = genotype
-        self.generation = generation
-
-    @property
-    def fitness(self):
-        return average(self.genotype.vector)
-
-    def __repr__(self):
-        s = "<OneMaxPhenotype("
-        s += "".join(str(x) for x in self.genotype.vector)
-        s += ")"
-        return s
-
-class AdultSelection(object):
-    __metaclass__ = ABCMeta
-
-    @abstractmethod
-    def select(self, pool): pass
-
-    @abstractmethod
-    def retain(self, pool): pass
-
-    @abstractmethod
-    def produce(self): pass
-
-
-class A_I(AdultSelection):
-    # Full Generational Replacement
-    def __init__(self, population):
-        self.population = population
-
-    def select(self, pool):
-        return pool
-
-    def retain(self, pool):
-        return []
-
-    def produce(self):
-        return self.population
-
-
-class A_II(AdultSelection):
-    # Over-production
-    def __init__(self, no_adults, no_children):
-        self.no_adults = no_adults
-        self.no_children = no_children
-
-    def select(self, pool):
-        return sorted(pool, key=lambda x: x.fitness, reverse=True)[:self.no_adults]
-
-    def retain(self, pool):
-        return []
-
-    def produce(self):
-        return self.no_children
-
-class A_III(AdultSelection):
-    # Generational Mixing
-    def __init__(self, no_adults, no_children):
-        self.no_adults = no_adults
-        self.no_children = no_children
-    
-    def select(self, pool):
-        return sorted(pool, key=lambda x: x.fitness, reverse=True)[:self.no_adults]
-    
-    def retain(self, pool):
-        return pool
-    
-    def produce(self):
-        return self.no_children
-
-
-class ParentSelection(object):
-    __metaclass__ = ABCMeta
-
-    def __iter__(self):
-        return self
-
-    def next(self):
-        p1 = None
-        p2 = None
-        r1 = random()
-        r2 = random()
-        for a,x in self.h:
-            if r1 < a:
-                p1 = x
-                break
-        for a,x in self.h:
-            if r2 < a:
-                p2 = x
-                break
-        return p1,p2
-
-class NormalizedRoulette(ParentSelection):
-
-    def __init__(self, adults):
-        ft = [x.fitness for x in adults]
-        s = sum(ft, 0.0)
-        ft[0] /= s
-        for i in range(1,len(ft)):
-            ft[i] /= s
-            ft[i] += ft[i-1]
-        self.h = zip(ft,adults)
-
-class SigmaScaling(ParentSelection):
-
-    def __init__(self, adults):
-        ft = [x.fitness for x in adults]
-        sd = 2*standard_deviation(ft)
-        if sd == 0:
-            self.h = [1]*len(adults)
-        else:
-            avg = average(ft)
-            self.h = []
-            for a in adults:
-                self.h.append((1+(a.fitness-avg)/sd))
-        s = sum(self.h,0.0)
-        self.h[0] /= s
-        for i in range(1, len(self.h)):
-            self.h[i] /= s
-            self.h[i] += self.h[i-1]
-        self.h = zip(self.h, adults)
-
-def TournamentSelectionFactory(k, eps):
-    class TournamentSelection(ParentSelection):
-        def __init__(self, adults):
-            self.adults = adults
-        
-        def nextp(self):
-            tournament = list(self.adults) 
-            shuffle(tournament)
-            tournament = tournament[:k]
-            cr = random()
-            if cr < eps:
-                return tournament[0]
-            else:
-                return max(tournament, key=lambda x: x.fitness)
-        
-        def next(self):
-            return self.nextp(), self.nextp()
-    return TournamentSelection
-
-def RankSelectionFactory(max_ft, min_ft):
-    class RankSelection(ParentSelection):
-        def __init__(self, adults):
-            self.adults = adults
-            self.h = []
-            for a in adults:
-                self.h.append((min_ft+(max_ft-min_ft)*(self.rank(a)-1/len(adults)-1)))
-            self.h = zip(self.h, adults)
-
-        def rank(self, individual):
-            adults_sorted = sorted(self.adults, key=lambda x: x.fitness)
-            return adults_sorted.index(individual) + 1
-    return RankSelection
 
 if __name__ == '__main__':
     #Default values
@@ -353,7 +130,7 @@ if __name__ == '__main__':
     fitchildren = 40
     adultselect = "A_III"
     parentselect = "rank"
-    phenotype = OneMaxPhenotype
+    phenotype = pheno.OneMaxPhenotype
     k = 20
     eps = 0.05
     max_ft = 1.5
@@ -446,7 +223,8 @@ if __name__ == '__main__':
         if o in ('--lf'):
             Lf = float(a)
 
-    ea = EA(fitchildren, crossover, mutation, BitVectorGenotype,
+    ea = EA(fitchildren, crossover, mutation,
+            geno.BitVectorGenotype,
             figure=figure,
             length=bvl,
             Rf=Rf,

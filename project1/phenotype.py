@@ -1,8 +1,13 @@
-from main import *
+from __future__ import division
+from abc import ABCMeta, abstractmethod, abstractproperty
 import main
-
+import genotype as geno
 import math
 
+from random import randint, random, shuffle
+
+def average(values):
+    return sum(values, 0.0) / len(values)
 
 def simulate_war(this, others, Rf, Lf):
     wins = 0
@@ -34,8 +39,29 @@ def simulate_war(this, others, Rf, Lf):
             wins += 1 
     return wins
 
+class Phenotype(object):
+    __metaclass__ = ABCMeta
+
+    @abstractproperty
+    def fitness(self): pass
 
 
+class OneMaxPhenotype(Phenotype):
+
+    def __init__(self, genotype, generation):
+        assert isinstance(genotype, geno.BitVectorGenotype)
+        self.genotype = genotype
+        self.generation = generation
+
+    @property
+    def fitness(self):
+        return average(self.genotype.vector)
+
+    def __repr__(self):
+        s = "<OneMaxPhenotype("
+        s += "".join(str(x) for x in self.genotype.vector)
+        s += ")"
+        return s
 
 class BlottoPhenotype(Phenotype):
 
@@ -57,6 +83,8 @@ class BlottoPhenotype(Phenotype):
         if self._fitness:
             return self._fitness
         else:
+            assert 0 <= self.genotype.args['Rf'] <= 1
+            assert 0 <= self.genotype.args['Lf'] <= 1
             self._fitness = simulate_war(self, self.ea.pts, self.genotype.args['Rf'], self.genotype.args['Lf'])
             return self._fitness
 
