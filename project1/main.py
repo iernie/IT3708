@@ -53,6 +53,7 @@ class EA(object):
         self.parent_selection = parent_selection
         self.population = population
         self.pts = []
+        self.genotype = genotype
 
     def loop(self, generations):
         def reproduce(p1,p2):
@@ -69,6 +70,12 @@ class EA(object):
         maxs = []
         avgs = []
         sds = []  # standard deviations
+        strategy_entropies = []
+
+        if hasattr(self.individuals[0].phenotype, 'strategy_entropy'):
+            doentropy = True
+        else:
+            doentropy = False
 
         for i in xrange(generations):
             self.pts = [x.develop(self) for x in self.individuals]
@@ -77,6 +84,9 @@ class EA(object):
             sds.append(standard_deviation(fitness))
             print "Winner",i,max(self.pts, key=lambda x: x.fitness), maxs[-1]
             avgs.append(average(fitness))
+            if doentropy:
+                strategy_entropies.append(average([x.strategy_entropy for x in self.pts]))
+
 
             adults = self.adult_selection.select(self.pts)
             retain = self.adult_selection.retain(adults)
@@ -101,6 +111,7 @@ class EA(object):
         ax.plot(sds)
         ax.plot(avgs)
         fig.savefig("figure.eps")
+        print strategy_entropies
         #p.plot(maxs)
         #p.plot(avgs)
         #p.save("figure.png")
@@ -177,6 +188,12 @@ class OneMaxPhenotype(Phenotype):
     @property
     def fitness(self):
         return average(self.genotype.vector)
+
+    def __repr__(self):
+        s = "<OneMaxPhenotype("
+        s += "".join(str(x) for x in self.genotype.vector)
+        s += ")"
+        return s
 
 class AdultSelection(object):
     __metaclass__ = ABCMeta
@@ -400,10 +417,10 @@ if __name__ == '__main__':
                 print "You don't exist. Go away!"
                 sys.exit(-1)
 
-        for o in ('--crossover'):
+        if o in ('--crossover'):
             crossover = float(a)
 
-        for o in ('--mutation'):
+        if o in ('--mutation'):
             mutation = float(a)
 
     ea = EA(fitchildren, crossover, mutation, BitVectorGenotype,

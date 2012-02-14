@@ -1,6 +1,7 @@
 from main import *
 import main
 
+import math
 
 Rf = 0.5
 Lf = 0.5
@@ -60,6 +61,14 @@ class BlottoPhenotype(Phenotype):
         else:
             self._fitness = simulate_war(self, self.ea.pts)
             return self._fitness
+
+    @property
+    def strategy_entropy(self):
+        tsum = 0
+        for p in self.strategy:
+            if p != 0:
+                tsum -= p * math.log(p, 2)
+        return tsum
 
     def __repr__(self):
         s = "<BlottoPhenotype("
