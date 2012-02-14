@@ -111,7 +111,12 @@ class EA(object):
         ax.plot(sds)
         ax.plot(avgs)
         fig.savefig("figure.eps")
-        print strategy_entropies
+
+        if strategy_entropies:
+            fig2 = plt.figure()
+            ax = fig2.add_subplot(111)
+            ax.plot(strategy_entropies)
+            fig2.savefig('entropies.eps')
         #p.plot(maxs)
         #p.plot(avgs)
         #p.save("figure.png")
