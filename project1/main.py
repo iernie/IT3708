@@ -68,11 +68,13 @@ class EA(object):
             return cg
         maxs = []
         avgs = []
+        sds = []  # standard deviations
 
         for i in xrange(generations):
             self.pts = [x.develop(self) for x in self.individuals]
             fitness = [x.fitness for x in self.pts]
             maxs.append(max(fitness))
+            sds.append(standard_deviation(fitness))
             print "Winner",i,max(self.pts, key=lambda x: x.fitness), maxs[-1]
             avgs.append(average(fitness))
 
@@ -96,6 +98,7 @@ class EA(object):
         fig = plt.figure()
         ax = fig.add_subplot(111)
         ax.plot(maxs)
+        ax.plot(sds)
         ax.plot(avgs)
         fig.savefig("figure.eps")
         #p.plot(maxs)
