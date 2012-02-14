@@ -73,6 +73,7 @@ class EA(object):
             self.pts = [x.develop(self) for x in self.individuals]
             fitness = [x.fitness for x in self.pts]
             maxs.append(max(fitness))
+            print "Winner",i,max(self.pts, key=lambda x: x.fitness), maxs[-1]
             avgs.append(average(fitness))
 
             adults = self.adult_selection.select(self.pts)
