@@ -157,12 +157,12 @@ class BitVectorGenotype(Genotype):
             return BitVectorGenotype(
                     other.vector[:i] + self.vector[i:],
                     self.length, 
-                    self.phenotype)
+                    self.phenotype, **self.args)
         else:
             return BitVectorGenotype(
                     self.vector[:i] + other.vector[i:],
                     self.length,
-                    self.phenotype)
+                    self.phenotype, **self.args)
 
     def mutate(self):
         i = randint(0,len(self.vector)-1)
@@ -170,7 +170,7 @@ class BitVectorGenotype(Genotype):
         h[i] = (h[i] + 1)&1
         return BitVectorGenotype(h,
                 self.length,
-                self.phenotype)
+                self.phenotype, **self.args)
 
     def develop(self, i):
         return self.phenotype(self, i)

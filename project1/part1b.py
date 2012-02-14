@@ -57,6 +57,8 @@ class BlottoPhenotype(Phenotype):
         if self._fitness:
             return self._fitness
         else:
+            assert 0 <= self.genotype.args['Rf'] <= 1
+            assert 0 <= self.genotype.args['Lf'] <= 1
             self._fitness = simulate_war(self, self.ea.pts, self.genotype.args['Rf'], self.genotype.args['Lf'])
             return self._fitness
 
