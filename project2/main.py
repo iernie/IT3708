@@ -129,11 +129,11 @@ if __name__ == '__main__':
     #Default values
     population = 30
     generations = 100
-    bvl = 40
+    bvl = 481
     fitchildren = 40
     adultselect = "A_I"
     parentselect = "P_I"
-    phenotype = pheno.OneMaxPhenotype
+    phenotype = pheno.IzhikevichPhenotype
     k = 20
     eps = 0.05
     max_ft = 1.5
