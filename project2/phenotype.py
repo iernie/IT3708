@@ -138,16 +138,30 @@ class IzhikevichPhenotype(Phenotype):
 
     def __init__(self, genotype, generation):
         assert isinstance(genotype, geno.BitVectorGenotype)
+        assert len(genotype.vector) == 481
         self.genotype = genotype
         self.generation = generation
+        self.a = number_of_ones(self.genotype.vector[0:199])/1000
+        self.b = number_of_ones(self.genotype.vector[200:229])/100
+        self.c = -number_of_ones(self.genotype.vector[230:280])-30
+        self.d = number_of_ones(self.genotype.vector[281:380])/10
+        self.k = number_of_ones(self.genotype.vector[381:480])/100
+        self.tau = 10
+        self.I = 10
 
-        assert len(self.genotype.vector) == 481
-        a = number_of_ones(self.genotype.vector[0:199])/1000
-        b = number_of_ones(self.genotype.vector[200:229])/100
-        c = -number_of_ones(self.genotype.vector[230:280])-30
-        d = number_of_ones(self.genotype.vector[281:380])/10
-        k = number_of_ones(self.genotype.vector[381:480])/100
+        self.v = -60
+        self.u = 0
 
+        self.spike_threshold = 35
+        self.spike_train = []
+
+        for i in range(1000):
+            if self.v > self.spike_threshold:
+                self.v = self.c
+                self.u += self.d
+            self.v += (1/self.tau)*(self.k*self.v*self.v + 5*self.v + 140 + self.I)
+            self.u += (self.a/self.tau)*(self.b*selv.v - self.u)
+            self.spike_train.append(self.v)
 
     @property
     def fitness(self):
