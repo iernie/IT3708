@@ -39,6 +39,12 @@ def simulate_war(this, others, Rf, Lf):
             wins += 1 
     return wins
 
+def number_of_ones(array):
+    ones = 0
+    for i in [x for x in array if x == 1]:
+        ones++
+    return ones
+
 class Phenotype(object):
     __metaclass__ = ABCMeta
 
@@ -126,3 +132,25 @@ class BlottoPhenotype(Phenotype):
         s += ", ".join("%.2f"%x for x in self.strategy)
         s += ")"
         return s
+
+
+class IzhikevichPhenotype(Phenotype):
+
+    def __init__(self, genotype, generation):
+        assert isinstance(genotype, geno.BitVectorGenotype)
+        self.genotype = genotype
+        self.generation = generation
+
+        assert len(self.genotype.vector) == 481
+        a = number_of_ones(self.genotype.vector[0:199])/1000
+        b = number_of_ones(self.genotype.vector[200:229])/100
+        c = -number_of_ones(self.genotype.vector[230:280])-30
+        d = number_of_ones(self.genotype.vector[281:380])/10
+        k = number_of_ones(self.genotype.vector[381:480])/100
+
+
+    @property
+    def fitness(self):
+
+
+
