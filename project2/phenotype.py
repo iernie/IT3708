@@ -7,10 +7,11 @@ import itertools
 import matplotlib.pyplot as plt
 
 from random import randint, random, shuffle
+import time
 
 def read_training_data(number):
     f = open('training_data/izzy-train'+number+'.dat', 'r')
-    training_data = [x for x in f.read().split(" ")]
+    training_data = [float(x) for x in f.read().split(" ") if x]
     f.close()
     return training_data
 
@@ -29,7 +30,13 @@ def d_st(T_a, T_b, p):
     sigma = 0
     for t_ai, t_bi in itertools.izip(T_a, T_b):
         sigma += math.pow(math.fabs(t_ai - t_bi), p)
-    return (1/len(min(T_a,T_b,key=len)))*math.pow(sigma, (1/p))
+    nv = math.pow(sigma, (1/p))
+    if min(len(T_a),len(T_b)) == 0:
+        nv += abs(len(T_a) - len(T_b))*1000
+        return nv
+    else:
+        nv += abs(len(T_a) - len(T_b))*1000/min(len(T_a),len(T_b))
+    return (1/min(len(T_a),len(T_b)))*nv
 
 class Phenotype(object):
     __metaclass__ = ABCMeta
@@ -63,19 +70,33 @@ class IzhikevichPhenotype(Phenotype):
             if self.v > self.spike_threshold:
                 self.v = self.c
                 self.u += self.d
-            self.v += (1/self.tau)*(self.k*self.v*self.v + 5*self.v + 140 + self.I)
+            self.v += (1/self.tau)*(self.k*self.v*self.v + 5*self.v + 140 + self.I - self.u)
             self.u += (self.a/self.tau)*(self.b*self.v - self.u)
             self.spike_train.append(self.v)
 
+        self.T_a = find_spikes(self.spike_train, 0)
+
     @property
     def fitness(self):
-        T_a = find_spikes(self.spike_train, 0)
+        #print len(T_a)
         T_b = find_spikes(read_training_data('1'), 0)
-        return 1/d_st(T_a, T_b, 2)
+        #print T_b
+        return 1/d_st(self.T_a, T_b, 2)
 
     def __repr__(self):
+        #fig = plt.figure()
+        #ax = fig.add_subplot(111)
+        #ax.plot(self.spike_train)
+        #fig.savefig("spiketrains/%s.png"%time.time())
+
         s = "<IzhikevichPhenotype("
-        s += ", ".join("%.2f"%x for x in self.spike_train)
+        s += "%s %s %s %s %s %s"%(self.a,
+                self.b,
+                self.c,
+                self.d,
+                self.k,
+                len(self.T_a))
+        #s += ", ".join("%.2f"%x for x in self.spike_train)
         s += ")"
         return s
 

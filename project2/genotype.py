@@ -46,9 +46,16 @@ class BitVectorGenotype(Genotype):
                     self.phenotype, **self.args)
 
     def mutate(self):
-        i = randint(0,len(self.vector)-1)
-        h = self.vector
-        h[i] = (h[i] + 1)&1
+        #h = self.vector
+        #i = randint(0,len(self.vector)-1)
+        #h[i] = (h[i] + 1)&1
+        h = []
+        for x in self.vector:
+            if random() < 0.8:
+                t = x^1
+                h.append(t)
+            else:
+                h.append(x)
         return BitVectorGenotype(h,
                 self.length,
                 self.phenotype, **self.args)
