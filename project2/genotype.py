@@ -41,28 +41,33 @@ class BitVectorGenotype(Genotype):
                     self.length, 
                     self.phenotype, **self.args)
         else:
-            return BitVectorGenotype(
+                return BitVectorGenotype(
                     self.vector[:i] + other.vector[i:],
                     self.length,
                     self.phenotype, **self.args)
 
     def mutate(self):
-        h = self.vector
-        i = randint(0,len(self.vector)-1)
-        h[i] = (h[i] + 1)&1
-        #h = []
-        #for x in self.vector:
-        #    if random() < 0.5:
-        #        #t = x^1
-        #        h.append(randint(0,1))
-        #    else:
-        #        h.append(x)
-        return BitVectorGenotype(h,
-                self.length,
-                self.phenotype, **self.args)
+        #h = self.vector
+        #i = randint(0,len(self.vector)-1)
+        #h[i] = (h[i] + 1)&1
+        h = []
+        for x in self.vector:
+            if random() < 0.07:
+                t = x^1
+                h.append(t)
+                #h.append(randint(0,1))
+            else:
+                h.append(x)
+        self.vector = h
+        #return BitVectorGenotype(h,
+        #        self.length,
+        #        self.phenotype, **self.args)
 
     def develop(self, i):
         return self.phenotype(self, i)
+
+    def copy(self):
+        return BitVectorGenotype(self.vector, self.length, self.phenotype, **self.args)
 
     def __repr__(self):
         return "<BitVectorGenotype()>"

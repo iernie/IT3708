@@ -15,6 +15,7 @@ def read_training_data(number):
     f.close()
     return training_data
 
+
 def find_spikes(data, threshold):
     spikes = []
     for point in xrange(len(data)-5):
@@ -25,6 +26,10 @@ def find_spikes(data, threshold):
         if data[point+2] > threshold and data[point+2] == max:
             spikes.append(point+2)
     return spikes
+
+
+training_data = read_training_data('1')
+T_b = find_spikes(training_data, 0)
 
 def d_st(T_a, T_b, p):
     sigma = 0
@@ -46,6 +51,7 @@ class Phenotype(object):
 
 
 class IzhikevichPhenotype(Phenotype):
+    Rv = 0
 
     def __init__(self, genotype, generation):
         assert isinstance(genotype, geno.BitVectorGenotype)
@@ -88,19 +94,32 @@ class IzhikevichPhenotype(Phenotype):
         self.T_a = find_spikes(self.spike_train, 0)
 
     @property
-    def fitness(self):
+    def fitness2(self):
         #print len(T_a)
-        T_b = find_spikes(read_training_data('1'), 0)
         
         #print T_b
-        return 1/(d_st(self.T_a, T_b, 2)+1)
+        d = (d_st(self.T_a, T_b, 2)+1)
+        return 1/d/d
+
+    @property
+    def fitness(self):
+        #tsum = abs(len(self.T_a)-len(T_b))*1001
+        tsum = 0
+        p = 2
+        for va,vb in zip(self.spike_train, training_data):
+            tsum += (va-vb)**p
+        tsum = tsum**(1/p)
+        tsum /= 1001
+        return 1/tsum
 
     def __repr__(self):
-        #fig = plt.figure()
-        #ax = fig.add_subplot(111)
-        #ax.plot(self.spike_train)
-        #ax.plot(read_training_data('1'))
-        #fig.savefig("spiketrains/%s.png"%time.time())
+        if self.Rv <= 99:
+            fig = plt.figure()
+            ax = fig.add_subplot(111)
+            ax.plot(self.spike_train)
+            ax.plot(training_data)
+            fig.savefig("spiketrains/%s.png"%self.Rv)
+        IzhikevichPhenotype.Rv += 1
 
         s = "<IzhikevichPhenotype("
         s += "%s %s %s %s %s %s"%(self.a,

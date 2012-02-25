@@ -63,7 +63,7 @@ class EA(object):
             if cr < self.crossover:
                 cg = p1.genotype.crossover(p2.genotype) 
             else:
-                cg = p1.genotype
+                cg = p1.genotype.copy()
             cr = random()
             if cr < self.mutation:
                 cg.mutate()
@@ -85,12 +85,16 @@ class EA(object):
             sds.append(standard_deviation(fitness))
             print "Winner",i,max(self.pts, key=lambda x: x.fitness), maxs[-1], len(self.pts)
             avgs.append(average(fitness))
+
             if doentropy:
                 strategy_entropies.append(average([x.strategy_entropy for x in self.pts]))
 
 
             adults = self.adult_selection.select(self.pts)
             retain = self.adult_selection.retain(adults)
+            
+            #b=max(retain, key=lambda x: x.fitness)
+            #print "%.5f"%b.fitness, b.genotype.vector
 
             children = []
             i = self.adult_selection.produce()
@@ -128,7 +132,7 @@ class EA(object):
 if __name__ == '__main__':
     #Default values
     population = 500
-    generations = 100
+    generations = 50
     bvl = 31
     fitchildren = 500
     adultselect = "A_I"
@@ -139,7 +143,7 @@ if __name__ == '__main__':
     max_ft = 1.5
     min_ft = 0.5
     crossover = 0.95
-    mutation = 0.4
+    mutation = 1.0
     figure = "figure"
     Rf = 0.5
     Lf = 0.5
