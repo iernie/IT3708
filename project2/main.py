@@ -127,19 +127,19 @@ class EA(object):
 
 if __name__ == '__main__':
     #Default values
-    population = 100
+    population = 500
     generations = 100
-    bvl = 481
-    fitchildren = 100
-    adultselect = "A_III"
+    bvl = 31
+    fitchildren = 500
+    adultselect = "A_I"
     parentselect = "P_II"
     phenotype = pheno.IzhikevichPhenotype
     k = 20
     eps = 0.05
     max_ft = 1.5
     min_ft = 0.5
-    crossover = 0.9
-    mutation = 1.0
+    crossover = 0.95
+    mutation = 0.4
     figure = "figure"
     Rf = 0.5
     Lf = 0.5

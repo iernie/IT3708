@@ -33,7 +33,8 @@ class BitVectorGenotype(Genotype):
     def crossover(self, other):
         assert isinstance(other, BitVectorGenotype)
         assert len(self.vector) == len(other.vector)
-        i = randint(0,len(self.vector))
+        splits = [7,12,17,24]
+        i = splits[randint(0,len(splits)-1)]
         if randint(0,1) == 0:
             return BitVectorGenotype(
                     other.vector[:i] + self.vector[i:],
@@ -46,16 +47,16 @@ class BitVectorGenotype(Genotype):
                     self.phenotype, **self.args)
 
     def mutate(self):
-        #h = self.vector
-        #i = randint(0,len(self.vector)-1)
-        #h[i] = (h[i] + 1)&1
-        h = []
-        for x in self.vector:
-            if random() < 0.8:
-                t = x^1
-                h.append(t)
-            else:
-                h.append(x)
+        h = self.vector
+        i = randint(0,len(self.vector)-1)
+        h[i] = (h[i] + 1)&1
+        #h = []
+        #for x in self.vector:
+        #    if random() < 0.5:
+        #        #t = x^1
+        #        h.append(randint(0,1))
+        #    else:
+        #        h.append(x)
         return BitVectorGenotype(h,
                 self.length,
                 self.phenotype, **self.args)

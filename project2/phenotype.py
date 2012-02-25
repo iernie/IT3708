@@ -49,14 +49,25 @@ class IzhikevichPhenotype(Phenotype):
 
     def __init__(self, genotype, generation):
         assert isinstance(genotype, geno.BitVectorGenotype)
-        assert len(genotype.vector) == 481
+        #assert len(genotype.vector) == 481
         self.genotype = genotype
         self.generation = generation
-        self.a = sum(self.genotype.vector[0:199])/1000
-        self.b = sum(self.genotype.vector[200:229])/100
-        self.c = -sum(self.genotype.vector[230:280])-30
-        self.d = sum(self.genotype.vector[281:380])/10
-        self.k = sum(self.genotype.vector[381:480])/100
+        #self.a = sum(self.genotype.vector[0:200])/1000
+        #self.b = sum(self.genotype.vector[200:230])/100
+        ##self.c = -sum(self.genotype.vector[230:281])-30
+        #self.d = sum(self.genotype.vector[281:381])/10
+        #self.k = sum(self.genotype.vector[381:481])/100
+
+        A = [1,2,4,16,32,60,84]
+        B = [1,2,4,10,13]
+        C = [1,2,4,16,19]
+        D = [1,2,4,8,16,32,36]
+        self.a = (sum([a*x for a,x in zip(A, genotype.vector[0:7])])+1)/1000 
+        self.b = (sum([a*x for a,x in zip(B, genotype.vector[7:12])])+1)/100
+        self.c = -sum([a*x for a,x in zip(C, genotype.vector[12:17])])-30
+        self.d = (sum([a*x for a,x in zip(D,self.genotype.vector[17:24])])+1)/10
+        self.k = (sum([a*x for a,x in zip(D,self.genotype.vector[24:31])])+1)/100
+
         self.tau = 10
         self.I = 10
 
@@ -66,7 +77,7 @@ class IzhikevichPhenotype(Phenotype):
         self.spike_threshold = 35
         self.spike_train = []
 
-        for i in range(1000):
+        for i in range(1001):
             if self.v > self.spike_threshold:
                 self.v = self.c
                 self.u += self.d
@@ -80,13 +91,15 @@ class IzhikevichPhenotype(Phenotype):
     def fitness(self):
         #print len(T_a)
         T_b = find_spikes(read_training_data('1'), 0)
+        
         #print T_b
-        return 1/d_st(self.T_a, T_b, 2)
+        return 1/(d_st(self.T_a, T_b, 2)+1)
 
     def __repr__(self):
         #fig = plt.figure()
         #ax = fig.add_subplot(111)
         #ax.plot(self.spike_train)
+        #ax.plot(read_training_data('1'))
         #fig.savefig("spiketrains/%s.png"%time.time())
 
         s = "<IzhikevichPhenotype("
