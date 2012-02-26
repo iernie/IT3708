@@ -29,7 +29,7 @@ def find_spikes(data, threshold):
     return spikes
 
 
-training_data = read_training_data('4')
+training_data = read_training_data('3')
 T_b = find_spikes(training_data, 0)
 
 def d_st(T_a, T_b, p):
@@ -65,15 +65,15 @@ class IzhikevichPhenotype(Phenotype):
         #self.d = sum(self.genotype.vector[281:381])/10
         #self.k = sum(self.genotype.vector[381:481])/100
 
-        A = [1,2,4,16,32,60,84]
-        B = [1,2,4,10,13]
-        C = [1,2,4,16,19]
+        A = [1,2,4,8,16,32,60,77]
+        B = [1,2,4,8,15]
+        C = [1,2,4,8,16,19]
         D = [1,2,4,8,16,32,36]
-        self.a = (sum([a*x for a,x in zip(A, genotype.vector[0:7])])+1)/1000 
-        self.b = (sum([a*x for a,x in zip(B, genotype.vector[7:12])])+1)/100
-        self.c = -sum([a*x for a,x in zip(C, genotype.vector[12:17])])-30
-        self.d = (sum([a*x for a,x in zip(D,self.genotype.vector[17:24])])+1)/10
-        self.k = (sum([a*x for a,x in zip(D,self.genotype.vector[24:31])])+1)/100
+        self.a = (sum([a*x for a,x in zip(A, genotype.vector[0:8])])+1)/1000 
+        self.b = (sum([a*x for a,x in zip(B, genotype.vector[8:13])])+1)/100
+        self.c = -sum([a*x for a,x in zip(C, genotype.vector[13:19])])-30
+        self.d = (sum([a*x for a,x in zip(D,self.genotype.vector[19:26])])+1)/10
+        self.k = (sum([a*x for a,x in zip(D,self.genotype.vector[26:33])])+1)/100
 
         self.tau = 10
         self.I = 10

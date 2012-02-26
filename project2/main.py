@@ -133,7 +133,7 @@ if __name__ == '__main__':
     #Default values
     population = 500
     generations = 50
-    bvl = 31
+    bvl = 33
     fitchildren = 500
     adultselect = "A_III"
     parentselect = "P_II"

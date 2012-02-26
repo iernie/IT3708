@@ -33,7 +33,7 @@ class BitVectorGenotype(Genotype):
     def crossover(self, other):
         assert isinstance(other, BitVectorGenotype)
         assert len(self.vector) == len(other.vector)
-        splits = [7,12,17,24]
+        splits = [8,13,19,26]
         i = splits[randint(0,len(splits)-1)]
         if randint(0,1) == 0:
             return BitVectorGenotype(
