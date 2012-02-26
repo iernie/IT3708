@@ -135,7 +135,7 @@ if __name__ == '__main__':
     generations = 50
     bvl = 31
     fitchildren = 500
-    adultselect = "A_I"
+    adultselect = "A_III"
     parentselect = "P_II"
     phenotype = pheno.IzhikevichPhenotype
     k = 20

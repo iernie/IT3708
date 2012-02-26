@@ -11,7 +11,8 @@ import time
 
 def read_training_data(number):
     f = open('training_data/izzy-train'+number+'.dat', 'r')
-    training_data = [float(x) for x in f.read().split(" ") if x]
+    training_data = [float(x) for x in f.read().strip().split(" ") if x]
+    assert len(training_data) == 1001
     f.close()
     return training_data
 
@@ -28,7 +29,7 @@ def find_spikes(data, threshold):
     return spikes
 
 
-training_data = read_training_data('1')
+training_data = read_training_data('4')
 T_b = find_spikes(training_data, 0)
 
 def d_st(T_a, T_b, p):
@@ -102,7 +103,7 @@ class IzhikevichPhenotype(Phenotype):
         return 1/d/d
 
     @property
-    def fitness(self):
+    def fitness(self): # waveform
         #tsum = abs(len(self.T_a)-len(T_b))*1001
         tsum = 0
         p = 2
@@ -111,6 +112,25 @@ class IzhikevichPhenotype(Phenotype):
         tsum = tsum**(1/p)
         tsum /= 1001
         return 1/tsum
+
+    @property
+    def fitness3(self):
+        tsum = 0
+        p = 4
+        N = min(len(self.T_a), len(T_b))
+        for ai, ap, bi, bp in zip(self.T_a[1:],
+                self.T_a,
+                T_b[:1],
+                T_b):
+            tsum += abs((ai-ap) - (bi-bp))**p
+        tsum = tsum ** (1/p)
+        if N > 1:
+            tsum += abs(len(self.T_a) - len(T_b))*1000/min(len(self.T_a),len(T_b))
+            tsum = tsum / (N-1)
+        else:
+            tsum += abs(len(self.T_a) - len(T_b))*1000
+        return (1 / (tsum)) 
+
 
     def __repr__(self):
         if self.Rv <= 99:

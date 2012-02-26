@@ -25,7 +25,7 @@ class BitVectorGenotype(Genotype):
             for i in range(length):
                 self.vector.append(randint(0,1))
         else:
-            self.vector = vector
+            self.vector = list(vector)
         self.length = length
         self.phenotype = phenotype
         self.args = kwargs
@@ -52,10 +52,10 @@ class BitVectorGenotype(Genotype):
         #h[i] = (h[i] + 1)&1
         h = []
         for x in self.vector:
-            if random() < 0.07:
-                t = x^1
-                h.append(t)
-                #h.append(randint(0,1))
+            if random() < 0.25:
+                #t = x^1
+                #h.append(t)
+                h.append(randint(0,1))
             else:
                 h.append(x)
         self.vector = h
