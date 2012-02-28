@@ -3,14 +3,16 @@ from abc import ABCMeta, abstractmethod, abstractproperty
 import main
 import genotype as geno
 import math
-import itertools
 import matplotlib.pyplot as plt
 
 from random import randint, random, shuffle
 import time
 
+SDM = 1
+NUM = 1
+
 def read_training_data(number):
-    f = open('training_data/izzy-train'+number+'.dat', 'r')
+    f = open('training_data/izzy-train'+str(number)+'.dat', 'r')
     training_data = [float(x) for x in f.read().strip().split(" ") if x]
     assert len(training_data) == 1001
     f.close()
@@ -29,20 +31,45 @@ def find_spikes(data, threshold):
     return spikes
 
 
-training_data = read_training_data('3')
+training_data = read_training_data(NUM)
 T_b = find_spikes(training_data, 0)
 
 def d_st(T_a, T_b, p):
     sigma = 0
-    for t_ai, t_bi in itertools.izip(T_a, T_b):
-        sigma += math.pow(math.fabs(t_ai - t_bi), p)
-    nv = math.pow(sigma, (1/p))
+    for t_ai, t_bi in zip(T_a, T_b):
+        sigma += abs(t_ai - t_bi)**p
+    nv = sigma**(1/p)
     if min(len(T_a),len(T_b)) == 0:
         nv += abs(len(T_a) - len(T_b))*1000
         return nv
     else:
         nv += abs(len(T_a) - len(T_b))*1000/min(len(T_a),len(T_b))
     return (1/min(len(T_a),len(T_b)))*nv
+
+def d_wf(st, td, p):
+    #tsum = abs(len(self.T_a)-len(T_b))*1001
+    tsum = 0
+    for va,vb in zip(st, td):
+        tsum += (va-vb)**p
+    tsum = tsum**(1/p)
+    tsum /= 1001
+    return 1/tsum
+
+def d_si(T_a, T_b, p):
+    tsum = 0
+    N = min(len(T_a), len(T_b))
+    for ai, ap, bi, bp in zip(T_a[1:],
+            T_a,
+            T_b[:1],
+            T_b):
+        tsum += abs((ai-ap) - (bi-bp))**p
+    tsum = tsum ** (1/p)
+    if N > 1:
+        tsum += abs(len(self.T_a) - len(T_b))*1000/min(len(self.T_a),len(T_b))
+        tsum = tsum / (N-1)
+    else:
+        tsum += abs(len(self.T_a) - len(T_b))*1000
+    return (1 / (tsum)) 
 
 class Phenotype(object):
     __metaclass__ = ABCMeta
@@ -95,42 +122,14 @@ class IzhikevichPhenotype(Phenotype):
         self.T_a = find_spikes(self.spike_train, 0)
 
     @property
-    def fitness2(self):
-        #print len(T_a)
-        
-        #print T_b
-        d = (d_st(self.T_a, T_b, 2)+1)
-        return 1/d/d
-
-    @property
-    def fitness(self): # waveform
-        #tsum = abs(len(self.T_a)-len(T_b))*1001
-        tsum = 0
-        p = 2
-        for va,vb in zip(self.spike_train, training_data):
-            tsum += (va-vb)**p
-        tsum = tsum**(1/p)
-        tsum /= 1001
-        return 1/tsum
-
-    @property
-    def fitness3(self):
-        tsum = 0
-        p = 4
-        N = min(len(self.T_a), len(T_b))
-        for ai, ap, bi, bp in zip(self.T_a[1:],
-                self.T_a,
-                T_b[:1],
-                T_b):
-            tsum += abs((ai-ap) - (bi-bp))**p
-        tsum = tsum ** (1/p)
-        if N > 1:
-            tsum += abs(len(self.T_a) - len(T_b))*1000/min(len(self.T_a),len(T_b))
-            tsum = tsum / (N-1)
-        else:
-            tsum += abs(len(self.T_a) - len(T_b))*1000
-        return (1 / (tsum)) 
-
+    def fitness(self):
+        if SDM == 1: # Spike Time
+            d = (d_st(self.T_a, T_b, 2)+1)
+            return 1/d/d
+        elif SDM == 2: # Spike Interval
+            return d_si(self.T_a, T_b, 4)
+        elif SDM == 3: # Waveform
+            return d_wf(self.spike_train, training_data, 2)
 
     def __repr__(self):
         if self.Rv <= 99:
