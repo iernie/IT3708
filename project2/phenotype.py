@@ -20,7 +20,7 @@ def read_training_data(number):
 
 
 def find_spikes(data, threshold):
-    spikes = []
+    spikes = [0]
     for point in xrange(len(data)-5):
         max = 0
         for i in range(5):
@@ -28,6 +28,7 @@ def find_spikes(data, threshold):
                 max = data[point+i]
         if data[point+2] > threshold and data[point+2] == max:
             spikes.append(point+2)
+    spikes.append(1001)
     return spikes
 
 def d_st(T_a, T_b, p):

@@ -50,15 +50,13 @@ class BitVectorGenotype(Genotype):
         #h = self.vector
         #i = randint(0,len(self.vector)-1)
         #h[i] = (h[i] + 1)&1
-        h = []
-        for x in self.vector:
+        for i in range(len(self.vector)):
             if random() < 0.25:
-                #t = x^1
+                self.vector[i] = randint(0,1)
                 #h.append(t)
-                h.append(randint(0,1))
-            else:
-                h.append(x)
-        self.vector = h
+                #h.append(randint(0,1)
+            #else:
+            #    h.append(x)
         #return BitVectorGenotype(h,
         #        self.length,
         #        self.phenotype, **self.args)
