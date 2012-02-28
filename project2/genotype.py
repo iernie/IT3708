@@ -51,7 +51,7 @@ class BitVectorGenotype(Genotype):
         #i = randint(0,len(self.vector)-1)
         #h[i] = (h[i] + 1)&1
         for i in range(len(self.vector)):
-            if random() < 0.25:
+            if random() < self.args['mutation']:
                 self.vector[i] = randint(0,1)
                 #h.append(t)
                 #h.append(randint(0,1)

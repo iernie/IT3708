@@ -42,13 +42,12 @@ def get_parent_selection(parentselect, k, eps, max_ft, min_ft):
 class EA(object):
 
     def __init__(self, population, crossover,
-            mutation, genotype, adult_selection,
+            genotype, adult_selection,
             parent_selection, figure, **kwargs):
         self.individuals = []
         for i in xrange(population):
             self.individuals.append(genotype(None, **kwargs))
         self.crossover = crossover
-        self.mutation = mutation
         self.adult_selection = adult_selection
         self.parent_selection = parent_selection
         self.population = population
@@ -64,9 +63,7 @@ class EA(object):
                 cg = p1.genotype.crossover(p2.genotype) 
             else:
                 cg = p1.genotype.copy()
-            cr = random()
-            if cr < self.mutation:
-                cg.mutate()
+            cg.mutate()
             return cg
         maxs = []
         avgs = []
@@ -143,7 +140,7 @@ if __name__ == '__main__':
     max_ft = 1.5
     min_ft = 0.5
     crossover = 0.95
-    mutation = 1.0
+    mutation = 0.25
     figure = "figure"
     Rf = 0.5
     Lf = 0.5
@@ -240,7 +237,7 @@ if __name__ == '__main__':
         if o in ('--td'):
             td = int(a)
 
-    ea = EA(fitchildren, crossover, mutation,
+    ea = EA(fitchildren, crossover, 
             geno.BitVectorGenotype,
             figure=figure,
             length=bvl,
@@ -250,5 +247,6 @@ if __name__ == '__main__':
             parent_selection=get_parent_selection(parentselect, k, eps, max_ft, min_ft),
             phenotype=phenotype,
             sdm=sdm,
+            mutation=mutation,
             td=td)
     ea.loop(generations)
