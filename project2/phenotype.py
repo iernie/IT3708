@@ -56,7 +56,7 @@ def d_si(T_a, T_b, p):
     N = min(len(T_a), len(T_b))
     for ai, ap, bi, bp in zip(T_a[1:],
             T_a,
-            T_b[:1],
+            T_b[1:],
             T_b):
         tsum += abs((ai-ap) - (bi-bp))**p
     tsum = tsum ** (1/p)
