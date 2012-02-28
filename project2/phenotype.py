@@ -61,10 +61,10 @@ def d_si(T_a, T_b, p):
         tsum += abs((ai-ap) - (bi-bp))**p
     tsum = tsum ** (1/p)
     if N > 1:
-        tsum += abs(len(self.T_a) - len(T_b))*1000/min(len(self.T_a),len(T_b))
+        tsum += abs(len(T_a) - len(T_b))*1000/min(len(self.T_a),len(T_b))
         tsum = tsum / (N-1)
     else:
-        tsum += abs(len(self.T_a) - len(T_b))*1000
+        tsum += abs(len(T_a) - len(T_b))*1000
     return (1 / (tsum)) 
 
 class Phenotype(object):
