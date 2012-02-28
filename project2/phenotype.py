@@ -30,10 +30,6 @@ def find_spikes(data, threshold):
             spikes.append(point+2)
     return spikes
 
-
-training_data = read_training_data(NUM)
-T_b = find_spikes(training_data, 0)
-
 def d_st(T_a, T_b, p):
     sigma = 0
     for t_ai, t_bi in zip(T_a, T_b):
@@ -81,16 +77,21 @@ class Phenotype(object):
 class IzhikevichPhenotype(Phenotype):
     Rv = 0
 
-    def __init__(self, genotype, generation):
+    def __init__(self, genotype, generation, **kwargs):
         assert isinstance(genotype, geno.BitVectorGenotype)
         #assert len(genotype.vector) == 481
         self.genotype = genotype
         self.generation = generation
+        self.sdm = kwargs['sdm']
+        self.td = kwargs['td']
         #self.a = sum(self.genotype.vector[0:200])/1000
         #self.b = sum(self.genotype.vector[200:230])/100
         ##self.c = -sum(self.genotype.vector[230:281])-30
         #self.d = sum(self.genotype.vector[281:381])/10
         #self.k = sum(self.genotype.vector[381:481])/100
+
+        self.training_data = read_training_data(self.td)
+        self.T_b = find_spikes(self.training_data, 0)
 
         A = [1,2,4,8,16,32,60,77]
         B = [1,2,4,8,15]
@@ -123,21 +124,21 @@ class IzhikevichPhenotype(Phenotype):
 
     @property
     def fitness(self):
-        if SDM == 1: # Spike Time
-            d = (d_st(self.T_a, T_b, 2)+1)
+        if self.sdm == 1: # Spike Time
+            d = (d_st(self.T_a, self.T_b, 2)+1)
             return 1/d/d
-        elif SDM == 2: # Spike Interval
-            return d_si(self.T_a, T_b, 4)
-        elif SDM == 3: # Waveform
-            return d_wf(self.spike_train, training_data, 2)
+        elif self.sdm == 2: # Spike Interval
+            return d_si(self.T_a, self.T_b, 4)
+        elif self.sdm == 3: # Waveform
+            return d_wf(self.spike_train, self.training_data, 2)
 
     def __repr__(self):
         if self.Rv <= 99:
             fig = plt.figure()
             ax = fig.add_subplot(111)
             ax.plot(self.spike_train)
-            ax.plot(training_data)
-            fig.savefig("spiketrains/%s.png"%self.Rv)
+            ax.plot(self.training_data)
+            fig.savefig("spiketrains/sdm%std%s-%s.png"%(self.sdm,self.td,self.Rv))
         IzhikevichPhenotype.Rv += 1
 
         s = "<IzhikevichPhenotype("

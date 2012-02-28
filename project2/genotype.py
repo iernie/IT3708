@@ -64,7 +64,7 @@ class BitVectorGenotype(Genotype):
         #        self.phenotype, **self.args)
 
     def develop(self, i):
-        return self.phenotype(self, i)
+        return self.phenotype(self, i, **self.args)
 
     def copy(self):
         return BitVectorGenotype(self.vector, self.length, self.phenotype, **self.args)
