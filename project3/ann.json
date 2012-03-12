@@ -19,16 +19,18 @@
 			"learning": 0
 		}
 	],
-	"links": {
-		"pre_syn_layer": "l1",
-		"post_syn_layer": "l2",
-		"conn_topology": "full",
-		"conn_prob": 1,
-		"lean_rule": "hebb",
-		"learn_rate": 0.2,
-		"min_weight": 0.1,
-		"max_weight": 0.3
-	},
+	"links": [
+		{
+			"pre_synaptic_layer": "l1",
+			"post_synaptic_layer": "l2",
+			"connection_topology": "full",
+			"connection_probability": 1,
+			"learning_rule": "hebb",
+			"learn_rate": 0.2,
+			"min_weight": 0.1,
+			"max_weight": 0.3
+		}
+	],
 	"execution_sequence": [
 		"l1",
 		"l2"
