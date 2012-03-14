@@ -3,7 +3,7 @@
 		{
 			"name": "l1",
 			"size": 4,
-			"activation_function": "STEP",
+			"activation_function": "step",
 			"threshold": 0,
 			"settling_rounds": 1,
 			"active": 1,
@@ -11,8 +11,8 @@
 		},
 		{
 			"name": "l2",
-			"size": 10,
-			"activation_function": "STEP",
+			"size": 4,
+			"activation_function": "step",
 			"threshold": 0.46,
 			"settling_rounds": 1,
 			"active": 1,
