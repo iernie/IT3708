@@ -79,7 +79,7 @@ class ANN:
 				int(layer["threshold"]),
 				)
 			for i in range(layer["size"]):
-				l.add_node(Node(str(layer["name"])))
+				l.add_node(Node(l))
 			self.layers[str(layer["name"])] = l
 
 		for link in data["links"]:
@@ -125,8 +125,6 @@ class ANN:
 			self.links.append(l)
 
 		self.execution_sequence = [str(x) for x in data["execution_sequence"]]
-
-
 
 if __name__ == '__main__':
 	ann = ANN("ann.json")
