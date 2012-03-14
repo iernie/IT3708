@@ -1,5 +1,6 @@
 import json
 import math
+import sys
 
 class Layer:
 	def __init__(self, learning, quicent, settling_rounds, 
@@ -149,6 +150,9 @@ class Node:
 			self.activation_level = self.membrane_potential
 		elif activation_function == "positive_linear":
 			self.activation_level = max(0.0,self.membrane_potential)
+		else:
+			print "You do not exist. Go Away!"
+			sys.exit(0)
 
 class ANN:
 	def __init__(self, filename):
