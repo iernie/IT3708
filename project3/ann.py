@@ -27,7 +27,7 @@ class Layer:
 		self.exiting_links.append(link)
 
 	def get_exiting_links(self):
-		return self.get_exiting_links
+		return self.exiting_links
 
 	def add_entering_link(self, link):
 		self.entering_links.append(link)
@@ -219,13 +219,13 @@ class ANN:
 		print "Number of layers in execution sequence: %i" % len(self.execution_sequence)
 
 		for name, layer in self.layers.items():
-			print "\n Layer: %s" % name
+			print "\nLayer: %s" % name
 			print "Number of nodes: %i" % len(layer.get_nodes())
 			print "Number of entering links: %i" % len(layer.get_entering_links())
 			print "Number of exiting links: %i" % len(layer.get_exiting_links())
 
 		for link in self.links:
-			print "\n Link:"
+			print "\nLink:"
 			print "Number of arcs: %i" % len(link.get_arcs())
 
 	def execute(self, input_values):
@@ -247,10 +247,12 @@ class ANN:
 if __name__ == '__main__':
 	ann = ANN("ann.json")
 
+	ann.print_ann()
+
 	input_values = [0.2, 0.1, 0.3, 0.5]
 	output_values = ann.execute(input_values)
 
-	print "Size: %d" % len(output_values)
+	print "\nSize: %d" % len(output_values)
 	print "Result:"
 	for o in output_values:
 		print "%d " % o
