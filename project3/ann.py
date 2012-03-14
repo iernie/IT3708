@@ -45,6 +45,10 @@ class Layer:
 		for node in self.nodes:
 			node.set_membrane_potential(0.0)
 
+	def reset_activation_level(self):
+		for node in self.nodes:
+			node.reset_activation_level()
+
 	def get_threshold(self):
 		return self.threshold
 
@@ -90,8 +94,8 @@ class Arc:
 		self.owner_link = owner_link
 		self.pre_synaptic_node = pre_synaptic_node
 		self.post_synaptic_node = post_synaptic_node
-		self.current_weight = 0
-		self.initial_weight = 0
+		self.current_weight = 0.0
+		self.initial_weight = 0.0
 
 	def get_pre_synaptic_node(self):
 		return self.pre_synaptic_node
@@ -108,15 +112,18 @@ class Arc:
 class Node:
 	def __init__(self, owner_layer):
 		self.owner_layer = owner_layer
-		self.membrane_potential = 0
-		self.activation_level = 0
-		self.previous_activation_level = 0
+		self.membrane_potential = 0.0
+		self.activation_level = 0.0
+		self.previous_activation_level = 0.0
 
 	def set_membrane_potential(self, membrane_potential):
 		self.membrane_potential = membrane_potential
 
 	def get_activation_level(self):
 		return self.activation_level
+
+	def reset_activation_level(self):
+		self.activation_level = 0.0
 
 	def add_to_membrane_potential(self, membrane_potential):
 		self.membrane_potential += membrane_potential
@@ -141,7 +148,7 @@ class Node:
 		elif activation_function == "linear":
 			self.activation_level = self.membrane_potential
 		elif activation_function == "positive_linear":
-			self.activation_level = max(0,self.membrane_potential)
+			self.activation_level = max(0.0,self.membrane_potential)
 
 class ANN:
 	def __init__(self, filename):
@@ -233,16 +240,23 @@ class ANN:
 			for i in input_values:
 				node.set_membrane_potential(i)
 
+		count = 0
 		for layer in [self.layers[x] for x in self.execution_sequence]:
 			for settling_round in xrange(layer.get_settling_rounds()):
-				if settling_round > 0:
+				if count > 0:
 					layer.reset_nodes_membrane_potential()
 				layer.run()
+			count += 1
 		output_values = []
 		for node in self.layers[self.execution_sequence[len(self.execution_sequence)-1]].get_nodes():
 			output_values.append(node.get_activation_level())
 
 		return output_values
+
+	def reset(self):
+		for layer in self.layers:
+			layer.reset_nodes_membrane_potential()
+			layer.reset_activation_level()
 
 if __name__ == '__main__':
 	ann = ANN("ann.json")
@@ -255,4 +269,4 @@ if __name__ == '__main__':
 	print "\nSize: %d" % len(output_values)
 	print "Result:"
 	for o in output_values:
-		print "%d " % o
+		print "%f " % o
