@@ -5,6 +5,8 @@
 import epuck_basic as epb
 #import graph
 import prims1
+import ann
+import imagepro
 
 # The webann is a descendent of the webot "controller" class, and it has the ANN as an attribute.
 
@@ -25,6 +27,8 @@ class WebAnn(epb.EpuckBasic):
             tfile = "redman4"):
         epb.EpuckBasic.__init__(self)
         self.basic_setup() # defined for EpuckBasic 
+        self.ann = ann.ANN("ann.json")
+        self.ann.print_ann()
         #self.ann = epuck2.annpuck2(agent = self, e_thresh = e_thresh,
         #        nvect = nvect, cvect = cvect, svect = svect, band = band, snapshow = snapshow,
 		#		concol = concol, ann_cycles = ann_cycles, agent_cycles = agent_cycles, act_noise = act_noise,
@@ -32,11 +36,11 @@ class WebAnn(epb.EpuckBasic):
 	
     def long_run(self,steps = 500):
         #self.ann.simsteps = steps
-        self.spin_angle(prims1.randab(0,360))
-        self.forward()
-        self.backward()
-        print self.get_proximities()
-        self.snapshot(True)
+        while True:
+            im = imagepro.column_avg(self.snapshot())
+            l,r = self.ann.execute(im)
+            self.set_wheel_speeds(l/60,r/60)
+            self.run_timestep()
         #self.ann.redman_run()
     
 

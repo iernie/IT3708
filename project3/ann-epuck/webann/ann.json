@@ -2,7 +2,7 @@
 	"layers": [
 		{
 			"name": "in",
-			"size": 2,
+			"size": 1,
 			"activation_function": "sigmoid_logistic",
 			"threshold": 0,
 			"settling_rounds": 1,
