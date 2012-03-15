@@ -4,6 +4,7 @@ import math
 import sys
 import random
 
+
 class Layer:
     def __init__(self, learning, quicent, settling_rounds, 
             is_active, activation_function, threshold):
@@ -24,7 +25,35 @@ class Layer:
         return self.nodes
 
     def get_activation_function(self):
-        return self.activation_function
+        d = {}
+        def register(f):
+            d[f.func_name] = f
+            return f
+
+        @register
+        def sigmoid_logistic(n, a=None):
+            return (1.0/(1.0+math.exp(-n)))
+
+        @register
+        def sigmoid_tanh(n, a=None):
+            return (math.exp(2*n)-1.0)/(math.exp(2*n)+1.0)
+
+        @register
+        def step(n, a=None):
+            if n >= a.owner_layer.get_threshold():
+                return 1.0
+            else:
+                return 0.0
+
+        @register
+        def linear(n, a=None):
+            return n
+
+        @register
+        def positive_linear(n, a=None):
+            return max(0.0, n)
+
+        return d[self.activation_function]
 
     def add_exiting_link(self, link):
         self.exiting_links.append(link)
@@ -138,23 +167,8 @@ class Node:
         self.previous_activation_level = self.activation_level
 
         activation_function = self.owner_layer.get_activation_function()
+        self.activation_level = activation_function(self.membrane_potential)
 
-        if activation_function == "sigmoid_logistic":
-            self.activation_level = (1.0/(1.0+math.exp(-self.membrane_potential)))
-        elif activation_function == "sigmoid_tahn":
-            self.activation_level = (math.exp(2*self.membrane_potential)-1.0)/(math.exp(2*self.membrane_potential)+1.0)
-        elif activation_function == "step":
-            if self.membrane_potential >= self.owner_layer.get_threshold():
-                self.activation_level = 1.0
-            else:
-                self.activation_level = 0.0
-        elif activation_function == "linear":
-            self.activation_level = self.membrane_potential
-        elif activation_function == "positive_linear":
-            self.activation_level = max(0.0,self.membrane_potential)
-        else:
-            print "You do not exist. Go Away!"
-            sys.exit(0)
 
 
 class ANN:
@@ -272,7 +286,7 @@ if __name__ == '__main__':
 
     ann.print_ann()
 
-    input_values = [1 for i in range(52)]
+    input_values = [0 for i in range(52)]
     output_values = ann.execute(input_values)
 
     print "\nSize: %d" % len(output_values)
