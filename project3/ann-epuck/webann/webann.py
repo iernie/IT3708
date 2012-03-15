@@ -43,7 +43,7 @@ class WebAnn(epb.EpuckBasic):
             rim = [r-i-m for r,i,m in zip(im,bim,gim)]
             print rim
             l,r = self.ann.execute(rim)
-            self.set_wheel_speeds(l/40,r/40)
+            self.set_wheel_speeds(l/20,r/20)
             self.run_timestep()
         #self.ann.redman_run()
     

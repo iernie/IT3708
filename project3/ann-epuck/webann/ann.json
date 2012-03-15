@@ -36,8 +36,8 @@
 			"connection_probability": 1,
 			"learning_rule": "hebb",
 			"learn_rate": 0.2,
-			"min_weight": 0.5,
-			"max_weight": 0.6
+			"min_weight": 1,
+			"max_weight": 1
 		},
         {
             "pre_synaptic_layer": "in",
@@ -57,7 +57,7 @@
             "learning_rule": "hebb",
             "learn_rate": 0.2,
             "min_weight": 1,
-            "max_weight": 30
+            "max_weight": 10
         }
 	],
 	"execution_sequence": [
