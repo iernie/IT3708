@@ -2,6 +2,7 @@ from __future__ import division
 import json
 import math
 import sys
+import random
 
 class Layer:
     def __init__(self, learning, quicent, settling_rounds, 
@@ -96,8 +97,8 @@ class Arc:
         self.owner_link = owner_link
         self.pre_synaptic_node = pre_synaptic_node
         self.post_synaptic_node = post_synaptic_node
-        self.current_weight = 0.0
-        self.initial_weight = 0.0
+        self.current_weight = random.uniform(*owner_link.get_range())
+        self.initial_weight = self.current_weight
 
     def get_pre_synaptic_node(self):
         return self.pre_synaptic_node
@@ -137,7 +138,6 @@ class Node:
         self.previous_activation_level = self.activation_level
 
         activation_function = self.owner_layer.get_activation_function()
-        print self.activation_level, "DIN NISSE!@"
 
         if activation_function == "sigmoid_logistic":
             self.activation_level = (1.0/(1.0+math.exp(-self.membrane_potential)))
@@ -155,7 +155,6 @@ class Node:
         else:
             print "You do not exist. Go Away!"
             sys.exit(0)
-        print self.activation_level, "DIN NISSE!@HEST", activation_function
 
 
 class ANN:
