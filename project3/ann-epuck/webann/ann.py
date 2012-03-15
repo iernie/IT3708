@@ -41,8 +41,10 @@ class Layer:
         @register
         def step(n, a=None):
             if n >= a.owner_layer.get_threshold():
+                print "hi",n
                 return 1.0
             else:
+                print "hn",n
                 return 0.0
 
         @register
@@ -141,6 +143,7 @@ class Arc:
     def get_initial_weight(self):
         return self.initial_weight
 
+
 class Node:
     def __init__(self, owner_layer):
         self.owner_layer = owner_layer
@@ -167,7 +170,7 @@ class Node:
         self.previous_activation_level = self.activation_level
 
         activation_function = self.owner_layer.get_activation_function()
-        self.activation_level = activation_function(self.membrane_potential)
+        self.activation_level = activation_function(self.membrane_potential, self)
 
 
 
@@ -232,6 +235,20 @@ class ANN:
                 nodes = [(i, j) for i in pre_nodes for j in post_nodes if i != j]
                 for i,j in nodes:
                     l.add_arc(Arc(l, i, j))
+            elif connection_topology == "lafull":
+                nodes = [(i, j) for i in pre_nodes for j in post_nodes]
+                increment = 1/len(nodes)
+                tmp = 0
+                for i in pre_nodes:
+                    for j in post_nodes:
+                        a = Arc(l, i, j)
+                        a.initial_weight = tmp
+                        a.current_weight = tmp
+                        tmp += increment
+                        l.add_arc(Arc(l, i, j))
+                    increment = -increment
+            else:
+                raise Exception("Not implemented")
 
             pre_synaptic_layer.add_exiting_link(l)
             post_synaptic_layer.add_entering_link(l)

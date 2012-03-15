@@ -37,9 +37,13 @@ class WebAnn(epb.EpuckBasic):
     def long_run(self,steps = 500):
         #self.ann.simsteps = steps
         while True:
-            im = imagepro.column_avg(self.snapshot())
-            l,r = self.ann.execute(im)
-            self.set_wheel_speeds(l/60,r/60)
+            im = imagepro.column_avg(self.snapshot(),"red")
+            bim = imagepro.column_avg(self.snapshot(),"blue")
+            gim = imagepro.column_avg(self.snapshot(),"green")
+            rim = [r-i-m for r,i,m in zip(im,bim,gim)]
+            print rim
+            l,r = self.ann.execute(rim)
+            self.set_wheel_speeds(l/40,r/40)
             self.run_timestep()
         #self.ann.redman_run()
     

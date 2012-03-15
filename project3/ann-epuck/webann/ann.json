@@ -2,7 +2,7 @@
 	"layers": [
 		{
 			"name": "in",
-			"size": 1,
+			"size": 52,
 			"activation_function": "sigmoid_logistic",
 			"threshold": 0,
 			"settling_rounds": 1,
@@ -17,22 +17,52 @@
 			"settling_rounds": 1,
 			"active": 1,
 			"learning": 0
-		}
+		},
+        {
+            "name": "nada",
+            "size": 1,
+            "activation_function": "step",
+            "threshold": -10.001,
+            "settling_rounds": 1,
+            "active": 1,
+            "learning": 0
+        }
 	],
 	"links": [
 		{
 			"pre_synaptic_layer": "in",
 			"post_synaptic_layer": "out",
-			"connection_topology": "full",
+			"connection_topology": "lafull",
 			"connection_probability": 1,
 			"learning_rule": "hebb",
 			"learn_rate": 0.2,
 			"min_weight": 0.5,
 			"max_weight": 0.6
-		}
+		},
+        {
+            "pre_synaptic_layer": "in",
+            "post_synaptic_layer": "nada",
+            "connection_topology": "full",
+            "connection_probability": 1,
+            "learning_rule": "hebb",
+            "learn_rate": 0.2,
+            "min_weight": -1.1,
+            "max_weight": -1.8
+        },
+        {
+            "pre_synaptic_layer": "nada",
+            "post_synaptic_layer": "out",
+            "connection_topology": "full",
+            "connection_probability": 1,
+            "learning_rule": "hebb",
+            "learn_rate": 0.2,
+            "min_weight": 1,
+            "max_weight": 30
+        }
 	],
 	"execution_sequence": [
 		"in",
+        "nada",
 		"out"
 	]
 }
