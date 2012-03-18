@@ -30,9 +30,10 @@
 	],
 	"links": [
 		{
+			"name": "l1",
 			"pre_synaptic_layer": "in",
 			"post_synaptic_layer": "out",
-			"connection_topology": "lafull",
+			"connection_topology": "full",
 			"connection_probability": 1,
 			"learning_rule": "hebb",
 			"learn_rate": 0.2,
@@ -40,6 +41,7 @@
 			"max_weight": 1
 		},
         {
+        	"name": "l2",
             "pre_synaptic_layer": "in",
             "post_synaptic_layer": "nada",
             "connection_topology": "full",
@@ -50,6 +52,7 @@
             "max_weight": -1.8
         },
         {
+        	"name": "l3",
             "pre_synaptic_layer": "nada",
             "post_synaptic_layer": "out",
             "connection_topology": "full",
@@ -64,5 +67,10 @@
 		"in",
         "nada",
 		"out"
+	],
+	"learning_order": [
+		"l3",
+		"l2",
+		"l1"
 	]
 }
