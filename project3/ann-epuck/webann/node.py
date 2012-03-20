@@ -72,7 +72,7 @@ class Node:
 			return 1.0
 
 		@register
-		def positive_linear(n, a=None):
+		def positive_linear(activation_level):
 			return 1.0
 
 		return d[name]

@@ -1,12 +1,13 @@
 # This uses the EpuckBasic code as the interface to webots, and the epuck2 code to connect an ANN
 # to webots.
-
+from __future__ import division
 #import epuck2
 import epuck_basic as epb
 #import graph
 import prims1
 import ann
 import imagepro
+
 
 # The webann is a descendent of the webot "controller" class, and it has the ANN as an attribute.
 
@@ -35,24 +36,33 @@ class WebAnn(epb.EpuckBasic):
 		#		tfile = tfile)
 	
     def long_run(self,steps = 500):
-        #self.ann.simsteps = steps
-        f = open('learning_data', 'w')
         while True:
-            im = imagepro.column_avg(self.snapshot(),"red")
-            bim = imagepro.column_avg(self.snapshot(),"blue")
-            gim = imagepro.column_avg(self.snapshot(),"green")
-            rim = [r-i-m for r,i,m in zip(im,bim,gim)]
-            print rim
-            for r in rim:
-                i = "%s " % r
-                f.write(i)
-            l,r = self.ann.execute(rim)
-            o = "\n%s %s\n" %(l, r)
-            f.write(o)
-            self.set_wheel_speeds(l/20,r/20)
+            image = self.snapshot()
+
+            red_in_columns = []
+            for x in xrange(image.size[0]):
+                red = 0
+                for y in xrange(image.size[1]):
+                    pixel = image.getpixel((x,y))
+                    if pixel[0] > 145 and pixel[0] < 160:
+                        red += 1
+                red_in_columns.append(red)
+
+            index = float(red_in_columns.index(max(red_in_columns)))
+
+            right = index/len(red_in_columns)
+            left = (len(red_in_columns)-index)/len(red_in_columns)
+
+            print "left", left
+            print "right", right
+
+            l,r = self.ann.execute([left, right])
+
+            print "l", l
+            print "r", r
+
+            self.set_wheel_speeds(l,r)
             self.run_timestep()
-        #self.ann.redman_run()
-        f.close()
     
 
 #*** MAIN ***

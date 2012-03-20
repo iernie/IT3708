@@ -61,15 +61,14 @@ class Link:
 				link.add_arc(Arc.Arc(link, i, j))
 
 		@register
-		def lafull(link, pre_nodes, post_nodes):
-			nodes = [(i, j) for i in pre_nodes for j in post_nodes]
-			increment = 1/len(nodes)
-			tmp = 0
-			for i in pre_nodes:
-				for j in post_nodes:
-					link.add_arc(Arc.Arc(link, i, j, tmp))
-					tmp += increment
-				increment = -increment
+		def optimal(link, pre_nodes, post_nodes):
+			for i in xrange(len(pre_nodes)):
+				for j in xrange(len(post_nodes)):
+					pre_node = pre_nodes[i]
+					post_node = post_nodes[j]
+					weight = 0.0
+					if (i,j) == (0,1) or (i,j) == (1,0): weight = 1.0
+					link.add_arc(Arc.Arc(link, pre_node, post_node, weight))
 
 		return d[self.connection_topology]
 

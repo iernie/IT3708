@@ -2,8 +2,8 @@
 	"layers": [
 		{
 			"name": "in",
-			"size": 52,
-			"activation_function": "sigmoid_logistic",
+			"size": 2,
+			"activation_function": "linear",
 			"threshold": 0,
 			"settling_rounds": 1,
 			"active": 1,
@@ -17,60 +17,26 @@
 			"settling_rounds": 1,
 			"active": 1,
 			"learning": 0
-		},
-        {
-            "name": "nada",
-            "size": 1,
-            "activation_function": "step",
-            "threshold": -10.001,
-            "settling_rounds": 1,
-            "active": 1,
-            "learning": 0
-        }
+		}
 	],
 	"links": [
 		{
 			"name": "l1",
 			"pre_synaptic_layer": "in",
 			"post_synaptic_layer": "out",
-			"connection_topology": "full",
+			"connection_topology": "optimal",
 			"connection_probability": 1,
 			"learning_rule": "hebb",
 			"learn_rate": 0.2,
-			"min_weight": 1,
+			"min_weight": 0,
 			"max_weight": 1
-		},
-        {
-        	"name": "l2",
-            "pre_synaptic_layer": "in",
-            "post_synaptic_layer": "nada",
-            "connection_topology": "full",
-            "connection_probability": 1,
-            "learning_rule": "hebb",
-            "learn_rate": 0.2,
-            "min_weight": -1.1,
-            "max_weight": -1.8
-        },
-        {
-        	"name": "l3",
-            "pre_synaptic_layer": "nada",
-            "post_synaptic_layer": "out",
-            "connection_topology": "full",
-            "connection_probability": 1,
-            "learning_rule": "hebb",
-            "learn_rate": 0.2,
-            "min_weight": 1,
-            "max_weight": 10
-        }
+		}
 	],
 	"execution_sequence": [
 		"in",
-        "nada",
 		"out"
 	],
 	"learning_order": [
-		"l3",
-		"l2",
 		"l1"
 	]
 }
