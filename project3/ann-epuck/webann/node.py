@@ -46,7 +46,7 @@ class Node:
 	def update_delta_value(self):
 		activation_function = self.get_activation_function(
 			self.owner_layer.get_activation_function_name())
-		self.delta_value = activation_function(self.activation_level)*get_difference()
+		self.delta_value = activation_function(self.activation_level)*self.get_difference()
 
 	def get_activation_function(self, name):
 		d = {}

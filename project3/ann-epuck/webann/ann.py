@@ -94,7 +94,7 @@ class ANN:
 		return output_values
 
 	def execute_learning(self, input_values, target_values):
-		output_values = self.execute(input_values)
+		self.execute(input_values)
 
 		post_synaptic_layer = self.links[self.learning_order[0]].get_post_synaptic_layer()
 
@@ -105,11 +105,10 @@ class ANN:
 		learning_order = [self.links[x] for x in self.learning_order]
 
 		for link in learning_order:
-			print "Updating delta values..."
 			link.get_post_synaptic_layer().update_delta_values()
 			link.propagate_deltas()
 			link.modify_weights()
-			print "Done!"
+			print "Done learning!"
 
 
 	def reset(self):

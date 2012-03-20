@@ -24,12 +24,12 @@
 			"name": "l1",
 			"pre_synaptic_layer": "in",
 			"post_synaptic_layer": "out",
-			"connection_topology": "optimal",
+			"connection_topology": "full",
 			"connection_probability": 1,
 			"learning_rule": "hebb",
 			"learn_rate": 0.2,
 			"min_weight": 0,
-			"max_weight": 1
+			"max_weight": 0.05
 		}
 	],
 	"execution_sequence": [

@@ -30,12 +30,18 @@ class WebAnn(epb.EpuckBasic):
         self.basic_setup() # defined for EpuckBasic 
         self.ann = ann.ANN("ann.json")
         self.ann.print_ann()
+        self.learn(self.ann)
         #self.ann = epuck2.annpuck2(agent = self, e_thresh = e_thresh,
         #        nvect = nvect, cvect = cvect, svect = svect, band = band, snapshow = snapshow,
 		#		concol = concol, ann_cycles = ann_cycles, agent_cycles = agent_cycles, act_noise = act_noise,
 		#		tfile = tfile)
 	
     def long_run(self,steps = 500):
+        learn = False
+
+        if learn:
+            f = open("learning_data", "w")
+
         while True:
             image = self.snapshot()
 
@@ -58,11 +64,28 @@ class WebAnn(epb.EpuckBasic):
 
             l,r = self.ann.execute([left, right])
 
+            if learn:
+                line = "%s;%s;%s;%s\n" % (left, right, l, r)
+                f.write(line)
+
             print "l", l
             print "r", r
 
             self.set_wheel_speeds(l,r)
             self.run_timestep()
+
+        if learn:
+            f.close()
+
+    def learn(self, ann):
+        f = open("learning_data", "r")
+        for line in f:
+            print "line", line
+            values = [float(i) for i in line.strip().split(";")]
+            print values
+            ann.execute_learning(values[:2], values[2:])
+        f.close()
+
     
 
 #*** MAIN ***
