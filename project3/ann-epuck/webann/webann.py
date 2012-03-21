@@ -40,24 +40,41 @@ class WebAnn(epb.EpuckBasic):
         learn = False
 
         if learn:
-            f = open("_learning_data", "w")
+            f = open("learning_data_3", "w")
 
         while True:
             image = self.snapshot()
 
-            red_in_columns = []
+            red_columns = []
             for x in xrange(image.size[0]):
-                red = 0
                 for y in xrange(image.size[1]):
                     pixel = image.getpixel((x,y))
                     if pixel[0] > 145 and pixel[0] < 160:
-                        red += 1
-                red_in_columns.append(red)
+                        red_columns.append(x)
+                        break
 
-            index = float(red_in_columns.index(max(red_in_columns)))
+            if len(red_columns) == 0:
+                index = 0
+            else:
+                i = int(len(red_columns)/2)
+                index = red_columns[i]
+            
+            right = index/image.size[0]
+            left = (image.size[0]-index)/image.size[0]
 
-            right = index/len(red_in_columns)
-            left = (len(red_in_columns)-index)/len(red_in_columns)
+            #red_in_columns = []
+            #for x in xrange(image.size[0]):
+            #    red = 0
+            #    for y in xrange(image.size[1]):
+            #        pixel = image.getpixel((x,y))
+            #        if pixel[0] > 145 and pixel[0] < 160:
+            #            red += 1
+            #    red_in_columns.append(red)
+
+            #index = float(red_in_columns.index(max(red_in_columns)))
+
+            #right = index/len(red_in_columns)
+            #left = (len(red_in_columns)-index)/len(red_in_columns)
 
             print "left", left
             print "right", right
@@ -78,7 +95,7 @@ class WebAnn(epb.EpuckBasic):
             f.close()
 
     def learn(self, ann):
-        f = open("learning_data_2", "r")
+        f = open("learning_data", "r")
         for line in f:
             print "line", line
             values = [float(i) for i in line.strip().split(";")]
