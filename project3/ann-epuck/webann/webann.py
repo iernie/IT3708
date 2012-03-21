@@ -40,7 +40,7 @@ class WebAnn(epb.EpuckBasic):
         learn = False
 
         if learn:
-            f = open("learning_data", "w")
+            f = open("_learning_data", "w")
 
         while True:
             image = self.snapshot()
@@ -78,7 +78,7 @@ class WebAnn(epb.EpuckBasic):
             f.close()
 
     def learn(self, ann):
-        f = open("learning_data", "r")
+        f = open("learning_data_2", "r")
         for line in f:
             print "line", line
             values = [float(i) for i in line.strip().split(";")]
