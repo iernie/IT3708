@@ -30,7 +30,7 @@ class WebAnn(epb.EpuckBasic):
         self.basic_setup() # defined for EpuckBasic 
         self.ann = ann.ANN("ann.json")
         self.ann.print_ann()
-        self.learn(self.ann)
+        self.learn()
         #self.ann = epuck2.annpuck2(agent = self, e_thresh = e_thresh,
         #        nvect = nvect, cvect = cvect, svect = svect, band = band, snapshow = snapshow,
 		#		concol = concol, ann_cycles = ann_cycles, agent_cycles = agent_cycles, act_noise = act_noise,
@@ -94,13 +94,13 @@ class WebAnn(epb.EpuckBasic):
         if learn:
             f.close()
 
-    def learn(self, ann):
+    def learn(self):
         f = open("learning_data", "r")
         for line in f:
             print "line", line
             values = [float(i) for i in line.strip().split(";")]
             print values
-            ann.execute_learning(values[:2], values[2:])
+            self.ann.execute_learning(values[:2], values[2:])
         f.close()
 
     
