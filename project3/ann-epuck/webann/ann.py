@@ -115,18 +115,3 @@ class ANN:
 		for layer in self.layers:
 			layer.reset_nodes_membrane_potential()
 			layer.reset_activation_level
-
-
-
-if __name__ == '__main__':
-	ann = ANN("ann.json")
-
-	ann.print_ann()
-
-	input_values = [0 for i in range(52)]
-	output_values = ann.execute(input_values)
-
-	print "\nSize: %d" % len(output_values)
-	print "Result:"
-	for o in output_values:
-		print "%f " % o
