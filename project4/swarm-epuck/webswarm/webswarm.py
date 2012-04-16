@@ -31,12 +31,47 @@ class WebSwarm(epb.EpuckBasic):
         #        nvect = nvect, cvect = cvect, svect = svect, band = band, snapshow = snapshow,
 		#		concol = concol, ann_cycles = ann_cycles, agent_cycles = agent_cycles, act_noise = act_noise,
 		#		tfile = tfile)
-	
+    
     def long_run(self,steps = 500):
-        while True:
-            image = self.snapshot()
 
-            self.set_wheel_speeds(10,10)
+        max_speed = 1.0
+
+        weights = [
+                    [-1.0, -0.8],
+                    [-1.0, -0.8],
+                    [-0.4,  0.4],
+                    [ 0.0,  0.0],
+                    [ 0.0,  0.0],
+                    [ 0.4, -0.4],
+                    [-0.6, -0.8],
+                    [-0.6, -0.8]
+                ]
+
+        offset = [0.5 * max_speed, 0.5 * max_speed]
+
+        while True:
+            #image = self.snapshot()
+            
+            speeds = [0.0, 0.0]
+
+            proximities = self.get_proximities()
+            proximities = [(x/4096) for x in proximities]
+
+            print proximities
+
+            for i in range(2):
+                for j in range(8):
+                    speeds[i] += proximities[j] * weights[j][i]
+
+                speeds[i] = offset[i] + (speeds[i] * max_speed)
+                if speeds[i] > max_speed:
+                    speeds[i] = max_speed
+                elif speeds[i] < -max_speed:
+                    speeds[i] = -max_speed
+            
+            print speeds
+
+            self.set_wheel_speeds(speeds[0],speeds[1])
             self.run_timestep()
 
     
