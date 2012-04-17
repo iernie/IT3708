@@ -27,6 +27,7 @@ class EpuckBasic (DifferentialWheels):
 
   max_wheel_speed = 1000
   num_dist_sensors = 8
+  num_light_sensors = 8
   encoder_resolution = 159.23 # for wheel encoders
   tempo = 0.5  # Upper velocity bound = Fraction of the robot's maximum velocity = 1000 = 1 wheel revolution/sec  
   wheel_diameter = 4.1 # centimeters
@@ -48,10 +49,13 @@ class EpuckBasic (DifferentialWheels):
       self.enableEncoders(self.timestep)
       self.camera = self.getCamera('camera')
       self.camera.enable(4*self.timestep)
-      print "Camera width: " , self.camera.getWidth()
+      #print "Camera width: " , self.camera.getWidth()
       self.dist_sensor_values = [0 for i in range(self.num_dist_sensors)]
       self.dist_sensors = [self.getDistanceSensor('ps'+str(x)) for x in range(self.num_dist_sensors)]  # distance sensors
       map((lambda s: s.enable(self.timestep)), self.dist_sensors) # Enable all distance sensors
+      self.light_sensor_values = [0 for i in range(self.num_light_sensors)]
+      self.light_sensors = [self.getLightSensor('ls'+str(x)) for x in range(self.num_light_sensors)]  # light sensors
+      map((lambda s: s.enable(self.timestep)), self.light_sensors) # Enable all light sensors
 
  
 # **** TIMED ACTION ***
@@ -209,10 +213,13 @@ class EpuckBasic (DifferentialWheels):
 
   def get_proximities(self):
       for i in range(self.num_dist_sensors):
-	  self.dist_sensor_values[i] = self.dist_sensors[i].getValue()
+        self.dist_sensor_values[i] = self.dist_sensors[i].getValue()
       return self.dist_sensor_values
 
-
+  def get_lights(self):
+      for i in range(self.num_light_sensors):
+        self.light_sensor_values[i] = self.light_sensors[i].getValue()
+      return self.light_sensor_values
 
 # This is the high-level routine for getting camera images; just call it directly from your code and
 # then prepare to deal with the "Image" object that it returns.  This is where you'll need Python's Image module.
