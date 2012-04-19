@@ -9,6 +9,7 @@ class Robot:
         self.stagnation_threshold = 0.001
         self.retrieval_threshold = 0.3
         self.retrieval_light_threshold = 0.4
+        self.distance_threshold = 0.5
 
         self.recovering = False
         self.counter = 0
@@ -21,15 +22,29 @@ class Robot:
 
         @register
         def search(data):
-            speed = [0.0, 0.0]
-            for i in range(2):
-                for j in range(8):
-                    speed[i] += data[0][j] * self.weights[j][i]
+            # proximity sensors
+            sensors_left = sum(data[1][4:])
+            sensors_right = sum(data[1][:4])
 
-                speed[i] = self.offset[i] + (speed[i] * self.max_speed)
-                speed[i] = self.minmax(speed[i], -self.max_speed, self.max_speed)
+            sensors_back = data[1][0] + data[1][7]
 
-            return speed
+            diff = sensors_right - sensors_left
+            #left_speed = self.minmax((sensors_left + (sensors_right - sensors_left) * random.random()), -self.max_speed, self.max_speed)
+            #right_speed = self.minmax((sensors_right + (sensors_left - sensors_right) * random.random()), -self.max_speed, self.max_speed)
+            if diff < 0:
+                left_speed = self.max_speed
+                right_speed = self.max_speed * (1 + diff*2)
+            else:
+                left_speed = self.max_speed * (1 - diff*2)
+                right_speed = self.max_speed
+            if sensors_back < data[1][0] + data[1][7]:
+                left_speed = self.max_speed
+                right_speed = -self.max_speed
+
+            if left_speed == right_speed and left_speed >= self.distance_threshold:
+                right_speed = self.max_speed
+
+            return [left_speed, right_speed]
 
         @register
         def retrieval(data):
@@ -86,9 +101,9 @@ class Robot:
         if self.recovering: return True
         if self.last_data:
             if ( abs(self.last_data[0][0] - data[0][0]) < self.stagnation_threshold
-              or abs(self.last_data[0][7] - data[0][7]) < self.stagnation_threshold
+              or abs(self.last_data[1][0] - data[1][0]) < self.stagnation_threshold
               or self.last_data == data ):
-                if self.counter > 100:
+                if self.counter > 5000:
                     self.counter = 0
                     self.recovering = True
                     return True
