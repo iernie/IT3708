@@ -1,3 +1,5 @@
+STAGNATION_THRESHOLD = 5
+
 class Robot:
 	def __init__(self):
 		self.behaviours = self.get_behaviours()
@@ -6,6 +8,11 @@ class Robot:
 		self.offset = [0.5*self.max_speed, 0.5*self.max_speed]
 		self.close_threshold = 0.5
 		self.stagnation_threshold = 1.0
+
+
+        self.recovering = False
+        self.counter = 0
+        self.last_data = None
 
 	def get_behaviours(self):
 		d = {}
@@ -33,9 +40,23 @@ class Robot:
 				return [self.max_speed, self.max_speed]
 
 		@register
-		def stagnation(input):
+		def stagnation(data):
 			# TODO
-			return [0, 0]
+            lw,rw = 0,0
+            if self.recovering:
+                rw = -self.max_speed
+                lw = -self.max_speed
+                if counter > 50:
+                    lw = 0
+                if counter > 100:
+                    self.counter = 0
+                    self.recovering = False
+            else:
+                ## Check for stagnation
+                if self.last_input:
+                    pass
+            self.last_data = data
+			return (lw,rw)
 
 		return d
 
