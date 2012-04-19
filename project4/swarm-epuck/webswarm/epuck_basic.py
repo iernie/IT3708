@@ -253,6 +253,7 @@ class EpuckBasic (DifferentialWheels):
       while True:
           self.turn_left()
           self.get_proximities()
+          self.get_lights()
           # self.braitenburg_avoidance()
       
       

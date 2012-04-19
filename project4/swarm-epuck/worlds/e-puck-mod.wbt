@@ -87,11 +87,14 @@ DEF short_rock_4 Solid {
   translation 0.1 0.05 0.35
   rotation 0 1 0 5.36782
   children [
+    PointLight {
+      castShadows TRUE
+    }
     Shape {
       appearance Appearance {
         material Material {
-          diffuseColor 1 0.0117647 0.0117647
-          emissiveColor 1 0.0235294 0.0117647
+          diffuseColor 1 1 1
+          emissiveColor 1 1 1
         }
         texture ImageTexture {
           url [
@@ -103,9 +106,16 @@ DEF short_rock_4 Solid {
         size 0.1 0.1 0.1
       }
     }
+    Emitter {
+      type "infra-red"
+      channel -1
+    }
   ]
   name "short red block"
   boundingObject USE short_brick_1_geometry
+  physics Physics {
+    density 15
+  }
 }
 Solid {
   translation 1 0.05 0
@@ -148,7 +158,7 @@ Solid {
 }
 DEF E_PUCK EPuck {
   translation 0.2 0 0.25
-  rotation 0 1 0 1.57
+  rotation 0 1 0 0.57
   controller "webswarm"
   name "e-puck camera"
   camera_windowPosition 0.75 0.75
