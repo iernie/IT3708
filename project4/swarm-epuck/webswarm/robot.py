@@ -9,6 +9,10 @@ class Robot:
         self.stagnation_threshold = 1.0
         self.push_threshold = 0.1
 
+        self.recovering = False
+        self.counter = 0
+        self.last_data = None
+
     def get_behaviours(self):
         d = {}
         def register(fn):
@@ -42,8 +46,30 @@ class Robot:
 
         @register
         def stagnation(data):
-            # TODO
-            return [0, 0]
+            lw,rw = 0,0
+            if self.recovering:
+                rw = -self.max_speed
+                lw = -self.max_speed
+                if counter > 50:
+                    lw = 0
+                if counter > 100:
+                    self.counter = 0
+                    self.recovering = False
+            else:
+                ## Check for stagnation
+                if self.last_data:
+                    if ( abs(self.last_data[0][0] - self.data[0][0]) < self.stagnation_threshold
+                      or abs(self.last_data[1][0] - self.data[1][0]) < self.stagnation_threshold
+                      or self.last_data == self.data ):
+                        if counter > 100:
+                            counter = 0
+                            self.recovering = True
+                    else:
+                        counter = 0
+                    
+            self.counter += 1
+            self.last_data = data
+            return (lw,rw)
 
         return d
 
