@@ -22,10 +22,23 @@ class Robot:
         @register
         def search(data):
             # proximity sensors
-            sensors_left = sum(data[0][4:])
-            sensors_right = sum(data[0][:4])
-            left_speed = self.minmax((sensors_left + (sensors_right - sensors_left) * random.random()), -self.max_speed, self.max_speed)
-            right_speed = self.minmax((sensors_right + (sensors_left - sensors_right) * random.random()), -self.max_speed, self.max_speed)
+            sensors_left = sum(data[1][4:])
+            sensors_right = sum(data[1][:4])
+
+            sensors_back = data[1][3] + data[1][4]
+
+            diff = sensors_right - sensors_left
+            #left_speed = self.minmax((sensors_left + (sensors_right - sensors_left) * random.random()), -self.max_speed, self.max_speed)
+            #right_speed = self.minmax((sensors_right + (sensors_left - sensors_right) * random.random()), -self.max_speed, self.max_speed)
+            if diff < 0:
+                left_speed = self.max_speed
+                right_speed = self.max_speed * (1 + diff*2)
+            else:
+                left_speed = self.max_speed * (1 - diff*2)
+                right_speed = self.max_speed
+            if sensors_back < data[1][0] + data[1][7]:
+                left_speed = self.max_speed
+                right_speed = -self.max_speed
 
             if left_speed == right_speed and left_speed >= self.distance_threshold:
                 right_speed = self.max_speed
@@ -93,7 +106,7 @@ class Robot:
             if ( abs(self.last_data[0][0] - data[0][0]) < self.stagnation_threshold
               or abs(self.last_data[1][0] - data[1][0]) < self.stagnation_threshold
               or self.last_data == self.data ):
-                if self.counter > 100:
+                if self.counter > 5000:
                     self.counter = 0
                     self.recovering = True
                     return True
