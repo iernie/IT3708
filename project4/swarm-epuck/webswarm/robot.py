@@ -59,8 +59,17 @@ class Robot:
                     self.recovering = False
             else:
                 ## Check for stagnation
-                if self.last_input:
-                    pass
+                if self.last_data:
+                    if ( abs(self.last_data[0][0] - self.data[0][0]) < STAGNATION_THRESHOLD
+                      or abs(self.last_data[1][0] - self.data[1][0]) < STAGNATION_THRESHOLD
+                      or self.last_data == self.data ):
+                        if counter > 100:
+                            counter = 0
+                            self.recovering = True
+                    else:
+                        counter = 0
+                    
+            self.counter += 1
             self.last_data = data
             return (lw,rw)
 
