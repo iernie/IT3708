@@ -6,9 +6,9 @@ class Robot:
         self.max_speed = 1.0
         self.weights = [[-1.0, -0.8],[-1.0, -0.8],[-0.4,  0.4],[ 0.0,  0.0],[ 0.0,  0.0],[ 0.4, -0.4],[-0.6, -0.8],[-0.6, -0.8]]
         self.offset = [0.5*self.max_speed, 0.5*self.max_speed]
-        self.stagnation_threshold = 0.002
+        self.stagnation_threshold = 0.001
         self.retrieval_threshold = 0.3
-        self.retrieval_light_threshold = 0.1
+        self.retrieval_light_threshold = 0.08
 
         self.recovering = False
         self.counter = 0
@@ -99,14 +99,11 @@ class Robot:
     def stagnation_check(self, data):
         if self.recovering: return True
         if self.last_data:
-            print abs(self.last_data[0][0] - data[0][0])
-            print abs(self.last_data[1][0] - data[1][0])
-            print self.last_data == data
             if ( abs(self.last_data[0][0] - data[0][0]) < self.stagnation_threshold
               or abs(self.last_data[1][0] - data[1][0]) < self.stagnation_threshold
               or self.last_data == data ):
                 self.counter += 1
-                if self.counter > 100:
+                if self.counter > 200:
                     self.counter = 0
                     self.recovering = True
                     return True

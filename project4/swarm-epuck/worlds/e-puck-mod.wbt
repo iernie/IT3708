@@ -159,7 +159,6 @@ Solid {
 }
 DEF E_PUCK EPuck {
   translation 0.2 0 0.25
-  rotation 0 1 0 0
   controller "webswarm"
   name "e-puck camera"
   camera_windowPosition 0.75 0.75
@@ -176,7 +175,7 @@ DEF E_PUCK EPuck {
   camera_pixelSize 4
 }
 DEF E_PUCK EPuck {
-  translation -0.3 0 0.4
+  translation -0.4 0 0.6
   rotation 0 1 0 0.3
   controller "webswarm"
   name "e-puck camera"
