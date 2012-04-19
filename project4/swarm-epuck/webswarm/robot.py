@@ -1,4 +1,4 @@
-STAGNATION_THRESHOLD = 5
+STAGNATION_THRESHOLD = 0.01
 
 class Robot:
     def __init__(self):
