@@ -30,7 +30,7 @@ class Robot:
             if left_speed == right_speed and left_speed >= self.distance_threshold:
                 right_speed = self.max_speed
 
-            return [10*left_speed, 10*right_speed]
+            return [left_speed, right_speed]
 
         @register
         def retrieval(data):
@@ -88,6 +88,7 @@ class Robot:
         return False
 
     def stagnation_check(self, data):
+        if self.recovering: return True
         if self.last_data:
             if ( abs(self.last_data[0][0] - data[0][0]) < self.stagnation_threshold
               or abs(self.last_data[1][0] - data[1][0]) < self.stagnation_threshold
@@ -97,4 +98,5 @@ class Robot:
                     self.recovering = True
                     return True
         self.last_data = data
+        self.counter += 1 
         return False
