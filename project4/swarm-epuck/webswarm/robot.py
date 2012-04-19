@@ -6,7 +6,7 @@ class Robot:
         self.max_speed = 1.0
         self.weights = [[-1.0, -0.8],[-1.0, -0.8],[-0.4,  0.4],[ 0.0,  0.0],[ 0.0,  0.0],[ 0.4, -0.4],[-0.6, -0.8],[-0.6, -0.8]]
         self.offset = [0.5*self.max_speed, 0.5*self.max_speed]
-        self.stagnation_threshold = 0.001
+        self.stagnation_threshold = 0.002
         self.retrieval_threshold = 0.3
         self.retrieval_light_threshold = 0.1
 
@@ -77,7 +77,7 @@ class Robot:
 
         if self.retrieval_check(data):
             behaviour = "retrieval"
-        elif self.stagnation_check(data):
+        if self.stagnation_check(data):
             behaviour = "stagnation"
 
         print behaviour
@@ -87,22 +87,28 @@ class Robot:
         return min(max(data,min_value),max_value)
 
     def retrieval_check(self, data):
-        for prox,light in zip(data[0],data[1]):
-            print prox, light
-            if (prox > self.retrieval_threshold and light > self.retrieval_light_threshold):
+        for prox in data[0]:
+            light_is_near = False
+            for light in data[1]:
+                if light > self.retrieval_light_threshold:
+                    light_is_near = True
+            if prox > self.retrieval_threshold and light_is_near:
                 return True
         return False
 
     def stagnation_check(self, data):
         if self.recovering: return True
         if self.last_data:
+            print abs(self.last_data[0][0] - data[0][0])
+            print abs(self.last_data[1][0] - data[1][0])
+            print self.last_data == data
             if ( abs(self.last_data[0][0] - data[0][0]) < self.stagnation_threshold
               or abs(self.last_data[1][0] - data[1][0]) < self.stagnation_threshold
               or self.last_data == data ):
-                if self.counter > 5000:
+                self.counter += 1
+                if self.counter > 100:
                     self.counter = 0
                     self.recovering = True
                     return True
         self.last_data = data
-        self.counter += 1 
         return False

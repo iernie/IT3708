@@ -159,7 +159,7 @@ Solid {
 }
 DEF E_PUCK EPuck {
   translation 0.2 0 0.25
-  rotation 0 1 0 0.57
+  rotation 0 1 0 0
   controller "webswarm"
   name "e-puck camera"
   camera_windowPosition 0.75 0.75
@@ -167,8 +167,8 @@ DEF E_PUCK EPuck {
   camera_pixelSize 4
 }
 DEF E_PUCK EPuck {
-  translation 0.4 0 0.25
-  rotation 0 1 0 0.57
+  translation 0.8 0 0.15
+  rotation 0 1 0 0.1
   controller "webswarm"
   name "e-puck camera"
   camera_windowPosition 0.75 0.75
@@ -176,8 +176,8 @@ DEF E_PUCK EPuck {
   camera_pixelSize 4
 }
 DEF E_PUCK EPuck {
-  translation -0.2 0 0.25
-  rotation 0 1 0 0.57
+  translation -0.3 0 0.4
+  rotation 0 1 0 0.3
   controller "webswarm"
   name "e-puck camera"
   camera_windowPosition 0.75 0.75
@@ -185,8 +185,8 @@ DEF E_PUCK EPuck {
   camera_pixelSize 4
 }
 DEF E_PUCK EPuck {
-  translation 0.2 0 0.49
-  rotation 0 1 0 0.57
+  translation 0.3 0 0
+  rotation 0 1 0 0.2
   controller "webswarm"
   name "e-puck camera"
   camera_windowPosition 0.75 0.75
@@ -194,8 +194,8 @@ DEF E_PUCK EPuck {
   camera_pixelSize 4
 }
 DEF E_PUCK EPuck {
-  translation 0.4 0 -0.16
-  rotation 0 1 0 0.57
+  translation 0.4 0 0.18
+  rotation 0 1 0 0.19
   controller "webswarm"
   name "e-puck camera"
   camera_windowPosition 0.75 0.75
@@ -203,8 +203,8 @@ DEF E_PUCK EPuck {
   camera_pixelSize 4
 }
 DEF E_PUCK EPuck {
-  translation -0.1 0 -0.37
-  rotation 0 1 0 0.57
+  translation -0.1 0 0.8
+  rotation 0 1 0 0.8
   controller "webswarm"
   name "e-puck camera"
   camera_windowPosition 0.75 0.75
@@ -212,8 +212,8 @@ DEF E_PUCK EPuck {
   camera_pixelSize 4
 }
 DEF E_PUCK EPuck {
-  translation -0.4 0 -0.37
-  rotation 0 1 0 0.57
+  translation -0.9 0 -0.9
+  rotation 0 1 0 0.19
   controller "webswarm"
   name "e-puck camera"
   camera_windowPosition 0.75 0.75
@@ -221,8 +221,8 @@ DEF E_PUCK EPuck {
   camera_pixelSize 4
 }
 DEF E_PUCK EPuck {
-  translation -0.1 0 -0.6
-  rotation 0 1 0 0.57
+  translation 0.5 0 0.5
+  rotation 0 1 0 0.8
   controller "webswarm"
   name "e-puck camera"
   camera_windowPosition 0.75 0.75

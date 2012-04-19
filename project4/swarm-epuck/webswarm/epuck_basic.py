@@ -47,8 +47,8 @@ class EpuckBasic (DifferentialWheels):
       self.timestep = int(self.getBasicTimeStep()) # Fetched from WorldInfo.basicTimeStep (in the Webots world)
       self.tempo = tempo
       self.enableEncoders(self.timestep)
-      self.camera = self.getCamera('camera')
-      self.camera.enable(4*self.timestep)
+      #self.camera = self.getCamera('camera')
+      #self.camera.enable(4*self.timestep)
       #print "Camera width: " , self.camera.getWidth()
       self.dist_sensor_values = [0 for i in range(self.num_dist_sensors)]
       self.dist_sensors = [self.getDistanceSensor('ps'+str(x)) for x in range(self.num_dist_sensors)]  # distance sensors
