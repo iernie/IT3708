@@ -36,6 +36,9 @@ class WebSwarm(epb.EpuckBasic):
 
             proximities = [(x/4096) for x in self.get_proximities()]
             lights = [(x/4096) for x in self.get_lights()]
+
+            lights_order = [4,5,6,7,0,1,2,3]
+            lights = [lights[x] for x in lights_order]
             data = (proximities,lights)
             #print data
 

@@ -6,9 +6,9 @@ class Robot:
         self.max_speed = 1.0
         self.weights = [[-1.0, -0.8],[-1.0, -0.8],[-0.4,  0.4],[ 0.0,  0.0],[ 0.0,  0.0],[ 0.4, -0.4],[-0.6, -0.8],[-0.6, -0.8]]
         self.offset = [0.5*self.max_speed, 0.5*self.max_speed]
-        self.stagnation_threshold = 1.0
-        self.push_threshold = 0.7
-        self.distance_threshold = 0.5
+        self.stagnation_threshold = 0.001
+        self.retrieval_threshold = 0.3
+        self.retrieval_light_threshold = 0.4
 
         self.recovering = False
         self.counter = 0
@@ -21,25 +21,23 @@ class Robot:
 
         @register
         def search(data):
-            # proximity sensors
-            sensors_left = sum(data[0][4:])
-            sensors_right = sum(data[0][:4])
-            left_speed = self.minmax((sensors_left + (sensors_right - sensors_left) * random.random()), -self.max_speed, self.max_speed)
-            right_speed = self.minmax((sensors_right + (sensors_left - sensors_right) * random.random()), -self.max_speed, self.max_speed)
+            speed = [0.0, 0.0]
+            for i in range(2):
+                for j in range(8):
+                    speed[i] += data[0][j] * self.weights[j][i]
 
-            if left_speed == right_speed and left_speed >= self.distance_threshold:
-                right_speed = self.max_speed
+                speed[i] = self.offset[i] + (speed[i] * self.max_speed)
+                speed[i] = self.minmax(speed[i], -self.max_speed, self.max_speed)
 
-            return [left_speed, right_speed]
+            return speed
 
         @register
         def retrieval(data):
-            if (data[1][0],data[1][7]) < (self.push_threshold, self.push_threshold):
+            if (data[0][0] > self.retrieval_threshold and data[0][7] > self.retrieval_threshold):
                 return [self.max_speed, self.max_speed]
             else:
-                # light sensors
-                sensors_left = sum(data[1][4:])
-                sensors_right = sum(data[1][:4])
+                sensors_left = sum(data[0][4:])
+                sensors_right = sum(data[0][:4])
                 if (sensors_left - sensors_right) < 0:
                     return [self.max_speed * 0.7, self.max_speed * -0.3]
                 else:
@@ -48,17 +46,13 @@ class Robot:
         @register
         def stagnation(data):
             lw,rw = 0,0
-            if self.recovering:
-                rw = -self.max_speed
-                lw = -self.max_speed
-                if self.counter > 50:
-                    lw = 0
-                if self.counter > 100:
-                    self.counter = 0
-                    self.recovering = False
-            else:
-                ## Check for stagnation
+            rw = -self.max_speed
+            lw = -self.max_speed
+            if self.counter > 50:
+                lw = 0
+            if self.counter > 100:
                 self.counter = 0
+                self.recovering = False
                     
             self.counter += 1
             return (lw,rw)
@@ -82,8 +76,9 @@ class Robot:
         return min(max(data,min_value),max_value)
 
     def retrieval_check(self, data):
-        for sensor in data[1]:
-            if sensor > self.push_threshold:
+        for prox,light in zip(data[0],data[1]):
+            print prox, light
+            if (prox > self.retrieval_threshold and light > self.retrieval_light_threshold):
                 return True
         return False
 
@@ -91,8 +86,8 @@ class Robot:
         if self.recovering: return True
         if self.last_data:
             if ( abs(self.last_data[0][0] - data[0][0]) < self.stagnation_threshold
-              or abs(self.last_data[1][0] - data[1][0]) < self.stagnation_threshold
-              or self.last_data == self.data ):
+              or abs(self.last_data[0][7] - data[0][7]) < self.stagnation_threshold
+              or self.last_data == data ):
                 if self.counter > 100:
                     self.counter = 0
                     self.recovering = True

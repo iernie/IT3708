@@ -95,16 +95,16 @@ DEF short_rock_4 Solid {
         material Material {
           diffuseColor 1 1 1
           emissiveColor 1 1 1
-          transparency 0
+          transparency 0.4
         }
         texture ImageTexture {
           url [
-            "textures/stone-1.png"
+            "textures/stone-2.png"
           ]
         }
       }
       geometry DEF short_brick_1_geometry Box {
-        size 0.1 0.1 0.1
+        size 0.3 0.2 0.3
       }
     }
     Emitter {
