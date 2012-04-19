@@ -34,13 +34,13 @@ class WebSwarm(epb.EpuckBasic):
         while True:
             #image = self.snapshot()
 
-            proximities = [(x/4096) for x in self.get_proximities()]
+            data[0] = proximities = [(x/4096) for x in self.get_proximities()]
             #print proximities
 
-            lights = self.get_lights()
-            print lights
+            data[1] = lights = self.get_lights()
+            #print lights
 
-            speed = self.robot.update(proximities)
+            speed = self.robot.update(data)
 
             self.set_wheel_speeds(speed[0], speed[1])
             self.run_timestep()
