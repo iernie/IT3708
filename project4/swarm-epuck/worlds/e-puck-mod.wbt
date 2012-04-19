@@ -9,18 +9,18 @@ WorldInfo {
   runRealTime TRUE
 }
 Viewpoint {
-  orientation -0.561567 0.77848 0.280378 1.11319
-  position 1.15945 1.05102 1.32111
+  orientation 0.620558 -0.632298 -0.463796 4.5623
+  position 0.570788 2.4743 0.122041
 }
 PointLight {
-  ambientIntensity 0.5
-  intensity 0.6
+  ambientIntensity 0.05
+  intensity 0.3
   location 0.14 0.6 -0.55
   castShadows TRUE
 }
 PointLight {
-  ambientIntensity 0.5
-  intensity 0.6
+  ambientIntensity 0.05
+  intensity 0.3
   location -0.43 0.6 0.5
 }
 Background {
@@ -84,7 +84,7 @@ DEF ground Solid {
   }
 }
 DEF short_rock_4 Solid {
-  translation 0.1 0.05 0.35
+  translation 0 0.05 0
   rotation 0 1 0 5.36782
   children [
     PointLight {
@@ -95,10 +95,11 @@ DEF short_rock_4 Solid {
         material Material {
           diffuseColor 1 1 1
           emissiveColor 1 1 1
+          transparency 0
         }
         texture ImageTexture {
           url [
-            "textures/stone-2.png"
+            "textures/stone-1.png"
           ]
         }
       }

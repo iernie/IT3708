@@ -29,8 +29,8 @@ class Robot:
 
 		@register
 		def retrieval(input):
-			# TODO
-			return [0, 0]
+			if (input[0],input[7]) < (self.push_threshold, self.push_threshold):
+				return [self.max_speed, self.max_speed]
 
 		@register
 		def stagnation(input):
