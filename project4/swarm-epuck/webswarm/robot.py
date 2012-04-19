@@ -57,21 +57,24 @@ class Robot:
                     self.recovering = False
             else:
                 ## Check for stagnation
-                if self.last_data:
-                    if ( abs(self.last_data[0][0] - self.data[0][0]) < self.stagnation_threshold
-                      or abs(self.last_data[1][0] - self.data[1][0]) < self.stagnation_threshold
-                      or self.last_data == self.data ):
-                        if counter > 100:
-                            counter = 0
-                            self.recovering = True
-                    else:
-                        counter = 0
+                counter = 0
                     
             self.counter += 1
-            self.last_data = data
             return (lw,rw)
 
         return d
+
+    def stagnation_check(self, data):
+        if self.last_data:
+            if ( abs(self.last_data[0][0] - self.data[0][0]) < self.stagnation_threshold
+              or abs(self.last_data[1][0] - self.data[1][0]) < self.stagnation_threshold
+              or self.last_data == self.data ):
+                if counter > 100:
+                    counter = 0
+                    self.recovering = True
+                    return True
+        self.last_data = data
+        return False
 
     def update(self, data):
         # search, retrieval, stagnation
@@ -79,7 +82,7 @@ class Robot:
 
         if self.is_close_to_object(data[1]):
             behaviour = "retrieval"
-        elif False:
+        elif self.stagnation_check(data):
             behaviour = "stagnation"
 
         return self.behaviours[behaviour](data)
