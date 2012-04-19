@@ -8,8 +8,7 @@ class Robot:
         self.offset = [0.5*self.max_speed, 0.5*self.max_speed]
         self.stagnation_threshold = 0.001
         self.retrieval_threshold = 0.3
-        self.retrieval_light_threshold = 0.4
-        self.distance_threshold = 0.5
+        self.retrieval_light_threshold = 0.1
 
         self.recovering = False
         self.counter = 0
@@ -23,8 +22,8 @@ class Robot:
         @register
         def search(data):
             # proximity sensors
-            sensors_left = sum(data[1][4:])
-            sensors_right = sum(data[1][:4])
+            sensors_left = sum(data[1][:4])
+            sensors_right = sum(data[1][4:])
 
             sensors_back = data[1][0] + data[1][7]
 
@@ -37,12 +36,9 @@ class Robot:
             else:
                 left_speed = self.max_speed * (1 - diff*2)
                 right_speed = self.max_speed
-            if sensors_back < data[1][0] + data[1][7]:
+            if sensors_back < data[1][3] + data[1][4]:
                 left_speed = self.max_speed
                 right_speed = -self.max_speed
-
-            if left_speed == right_speed and left_speed >= self.distance_threshold:
-                right_speed = self.max_speed
 
             return [left_speed, right_speed]
 
