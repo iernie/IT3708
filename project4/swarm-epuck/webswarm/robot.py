@@ -31,6 +31,8 @@ class Robot:
 		def retrieval(input):
 			if (input[0],input[7]) < (self.push_threshold, self.push_threshold):
 				return [self.max_speed, self.max_speed]
+			else:
+				sensors_right = 
 
 		@register
 		def stagnation(input):
@@ -42,12 +44,14 @@ class Robot:
 	def update(self, input):
 
 		# search, retrieval, stagnation
-		if self.is_close_to_object(input):
-			behaviour = self.behaviours["retrieval"]
-		else:
-			behaviour = self.behaviours["search"]
+		behaviour = "search"
 
-		return behaviour(input)
+		if self.is_close_to_object(input[0]):
+			behaviour = "retrieval"
+		elif False:
+			behaviour = "stagnation"
+
+		return self.behaviours[behaviour](input)
 
 	def is_close_to_object(self, input):
 		for sensor in input:
