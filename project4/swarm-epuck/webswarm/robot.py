@@ -7,7 +7,7 @@ class Robot:
         self.weights = [[-1.0, -0.8],[-1.0, -0.8],[-0.4,  0.4],[ 0.0,  0.0],[ 0.0,  0.0],[ 0.4, -0.4],[-0.6, -0.8],[-0.6, -0.8]]
         self.offset = [0.5*self.max_speed, 0.5*self.max_speed]
         self.stagnation_threshold = 1.0
-        self.push_threshold = 0.1
+        self.push_threshold = 0.7
         self.distance_threshold = 0.5
 
         self.recovering = False
@@ -30,7 +30,7 @@ class Robot:
             if left_speed == right_speed and left_speed >= self.distance_threshold:
                 right_speed = self.max_speed
 
-            return [left_speed, right_speed]
+            return [10*left_speed, 10*right_speed]
 
         @register
         def retrieval(data):
@@ -51,14 +51,14 @@ class Robot:
             if self.recovering:
                 rw = -self.max_speed
                 lw = -self.max_speed
-                if counter > 50:
+                if self.counter > 50:
                     lw = 0
-                if counter > 100:
+                if self.counter > 100:
                     self.counter = 0
                     self.recovering = False
             else:
                 ## Check for stagnation
-                counter = 0
+                self.counter = 0
                     
             self.counter += 1
             return (lw,rw)
@@ -75,6 +75,7 @@ class Robot:
         elif self.stagnation_check(data):
             behaviour = "stagnation"
 
+        print behaviour
         return self.behaviours[behaviour](data)
 
     def minmax(self, data, min_value, max_value):
@@ -88,11 +89,11 @@ class Robot:
 
     def stagnation_check(self, data):
         if self.last_data:
-            if ( abs(self.last_data[0][0] - self.data[0][0]) < self.stagnation_threshold
-              or abs(self.last_data[1][0] - self.data[1][0]) < self.stagnation_threshold
+            if ( abs(self.last_data[0][0] - data[0][0]) < self.stagnation_threshold
+              or abs(self.last_data[1][0] - data[1][0]) < self.stagnation_threshold
               or self.last_data == self.data ):
-                if counter > 100:
-                    counter = 0
+                if self.counter > 100:
+                    self.counter = 0
                     self.recovering = True
                     return True
         self.last_data = data
