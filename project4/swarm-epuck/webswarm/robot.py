@@ -8,6 +8,7 @@ class Robot:
         self.offset = [0.5*self.max_speed, 0.5*self.max_speed]
         self.stagnation_threshold = 1.0
         self.push_threshold = 0.1
+        self.distance_threshold = 0.5
 
         self.recovering = False
         self.counter = 0
@@ -23,10 +24,10 @@ class Robot:
             # proximity sensors
             sensors_left = sum(data[0][4:])
             sensors_right = sum(data[0][:4])
-            left_speed = self.minmax(sensors_left + (sensors_right - sensors_left) * random.Random())
-            right_speed = self.minmax(sensors_right + (sensors_left - sensors_right) * random.Random())
+            left_speed = self.minmax((sensors_left + (sensors_right - sensors_left) * random.random()), -self.max_speed, self.max_speed)
+            right_speed = self.minmax((sensors_right + (sensors_left - sensors_right) * random.random()), -self.max_speed, self.max_speed)
 
-            if left_speed == right_speed && left_speed >= self.distance_threshold:
+            if left_speed == right_speed and left_speed >= self.distance_threshold:
                 right_speed = self.max_speed
 
             return [left_speed, right_speed]
@@ -64,6 +65,27 @@ class Robot:
 
         return d
 
+
+    def update(self, data):
+        # search, retrieval, stagnation
+        behaviour = "search"
+
+        if self.retrieval_check(data):
+            behaviour = "retrieval"
+        elif self.stagnation_check(data):
+            behaviour = "stagnation"
+
+        return self.behaviours[behaviour](data)
+
+    def minmax(self, data, min_value, max_value):
+        return min(max(data,min_value),max_value)
+
+    def retrieval_check(self, data):
+        for sensor in data[1]:
+            if sensor > self.push_threshold:
+                return True
+        return False
+
     def stagnation_check(self, data):
         if self.last_data:
             if ( abs(self.last_data[0][0] - self.data[0][0]) < self.stagnation_threshold
@@ -74,24 +96,4 @@ class Robot:
                     self.recovering = True
                     return True
         self.last_data = data
-        return False
-
-    def update(self, data):
-        # search, retrieval, stagnation
-        behaviour = "search"
-
-        if self.is_close_to_object(data[1]):
-            behaviour = "retrieval"
-        elif self.stagnation_check(data):
-            behaviour = "stagnation"
-
-        return self.behaviours[behaviour](data)
-
-    def minmax(data, min_value, max_value):
-        return min(max(data,min_value),max_value)
-
-    def is_close_to_object(self, data):
-        for sensor in data:
-            if sensor > self.push_threshold:
-                return True
         return False
